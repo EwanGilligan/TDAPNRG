@@ -1,2 +1,8 @@
 
 *.zip
+
+python-implementation/venv/
+
+python-implementation/\.idea/
+
+python-implementation/src/generator/__pycache__/
