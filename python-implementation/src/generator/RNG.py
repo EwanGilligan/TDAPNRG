@@ -2,9 +2,11 @@ from abc import ABC, abstractmethod
 
 
 class RNG(ABC):
-    @abstractmethod
+    def __init__(self, name: str):
+        self.name = name
+
     def get_name(self):
-        pass
+        return self.name
 
     @abstractmethod
     def next_long(self):

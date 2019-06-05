@@ -2,11 +2,9 @@ from src.generator.RNG import RNG
 
 
 class LCG(RNG):
-    def get_name(self):
-        return self.name
 
     def __init__(self, name: str, multiplier: int, increment: int, modulus: int, seed: int) -> None:
-        self.name = name
+        RNG.__init__(self, name)
         self.multiplier = multiplier
         self.increment = increment
         self.modulus = modulus
