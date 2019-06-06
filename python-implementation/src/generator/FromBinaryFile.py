@@ -22,7 +22,7 @@ class FromBinaryFile(RNG):
         return b7 | (b6 << 8) | (b5 << 16) | (b4 << 24) | (b3 << 32) | (b2 << 40) | (b1 << 48) | (b0 << 56)
 
     def next_double(self):
-        return abs(self.next_long() / 2 ** 64)
+        return abs(self.next_long() / (2 ** 63 - 1))
 
     def next_64_bits(self):
         return self.next_long()
