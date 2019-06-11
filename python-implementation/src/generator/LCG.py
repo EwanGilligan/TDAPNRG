@@ -1,4 +1,5 @@
 from src.generator.RNG import RNG
+import numpy as np
 
 
 class LCG(RNG):
@@ -10,15 +11,15 @@ class LCG(RNG):
         self.modulus = modulus
         self.seed = seed
 
-    def next_long(self):
+    def next_int(self):
         self.seed = (self.seed * self.multiplier + self.increment) % self.modulus
         return self.seed
 
-    def next_double(self):
-        return abs(self.next_long() / self.modulus)
+    def next_float(self):
+        return abs(self.next_int() / self.modulus)
 
     def next_64_bits(self):
-        high = self.next_long()
-        med = self.next_long()
-        low = self.next_long()
+        high = self.next_int()
+        med = self.next_int()
+        low = self.next_int()
         return (high << 33) ^ (med << 2) ^ (low << 62 >> 62)

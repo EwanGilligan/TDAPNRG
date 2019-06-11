@@ -1,4 +1,5 @@
 from src.generator.RNG import RNG
+import sys
 
 
 class FromBinaryFile(RNG):
@@ -10,19 +11,20 @@ class FromBinaryFile(RNG):
             print("Couldn't open file:", filepath)
             exit(1)
 
-    def next_long(self):
-        b0 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b1 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b2 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b3 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b4 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b5 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b6 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        b7 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
-        return b7 | (b6 << 8) | (b5 << 16) | (b4 << 24) | (b3 << 32) | (b2 << 40) | (b1 << 48) | (b0 << 56)
+    def next_int(self):
+        # b0 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b1 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b2 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b3 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b4 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b5 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b6 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # b7 = 0xFF & int.from_bytes(self.f.read(1), byteorder="little", signed=False)
+        # return b7 | (b6 << 8) | (b5 << 16) | (b4 << 24) | (b3 << 32) | (b2 << 40) | (b1 << 48) | (b0 << 56)
+        return int.from_bytes(self.f.read(8), byteorder="little", signed=True)
 
-    def next_double(self):
-        return abs(self.next_long() / (2 ** 63 - 1))
+    def next_float(self):
+        return abs(self.next_int() / sys.maxsize)
 
     def next_64_bits(self):
-        return self.next_long()
+        return self.next_int()
