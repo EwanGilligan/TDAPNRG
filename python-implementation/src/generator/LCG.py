@@ -4,22 +4,22 @@ import numpy as np
 
 class LCG(RNG):
 
-    def __init__(self, name: str, multiplier: int, increment: int, modulus: int, seed: int) -> None:
+    def __init__(self, name: str, multiplier: np.int64, increment: np.int64, modulus: np.int64, seed: np.int64) -> None:
         RNG.__init__(self, name)
-        self.multiplier = multiplier
-        self.increment = increment
-        self.modulus = modulus
-        self.seed = seed
+        self.multiplier = np.int64(multiplier)
+        self.increment = np.int64(increment)
+        self.modulus = np.int64(modulus)
+        self.seed = np.int64(seed)
 
-    def next_int(self):
+    def next_int(self) -> np.int64:
         self.seed = (self.seed * self.multiplier + self.increment) % self.modulus
         return self.seed
 
-    def next_float(self):
-        return abs(self.next_int() / self.modulus)
+    def next_float(self) -> np.float64:
+        return np.float64(abs(self.next_int() / self.modulus))
 
-    def next_64_bits(self):
+    def next_64_bits(self) -> np.int64:
         high = self.next_int()
         med = self.next_int()
         low = self.next_int()
-        return (high << 33) ^ (med << 2) ^ (low << 62 >> 62)
+        return np.int64((high << 33) ^ (med << 2) ^ (low << 62 >> 62))

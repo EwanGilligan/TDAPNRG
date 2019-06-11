@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import numpy as np
 
 
 class RNG(ABC):
@@ -13,11 +14,11 @@ class RNG(ABC):
         return self.name
 
     @abstractmethod
-    def next_int(self) -> int:
+    def next_int(self) -> np.int64:
         pass
 
     @abstractmethod
-    def next_float(self) -> float:
+    def next_float(self) -> np.float64:
         pass
 
     @abstractmethod
