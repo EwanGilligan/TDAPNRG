@@ -1,27 +1,29 @@
 import dionysus as d
 import numpy as np
 from scipy import stats
-import gudhi
+from ripser import Rips
+from typing import List
+from matplotlib import pyplot
 
 from src.generator import RNG
 
 
 class HypercubeTest:
 
-    def __init__(self, runs: int, number_of_points: int, dimension: int) -> None:
+    def __init__(self, runs: int, number_of_points: int, dimension: int, max_simplex_dim: int) -> None:
         self.runs = runs
         self.number_of_points = number_of_points
         self.dimension = dimension
+        self.max_simplex_dim = max_simplex_dim
 
-    def generate_diagram(self, rng: RNG) -> d.Diagram:
-        # generate the point cloud.
-        points = np.array([[rng.next_float() for i in range(self.dimension)] for i in range(self.number_of_points)])
-        filtration = d.fill_rips(points, 1, 0.1)
-        homology_groups = d.homology_persistence(filtration)
-        diagram = d.init_diagrams(homology_groups, filtration)
-        return diagram
+    def single_run(self, rng: RNG, reference_diagram: d.Diagram):
+        points = self.generate_points(rng)
+        diagram = self.generate_diagram(points)
 
-    def single_run(self, rng: RNG, reference_diagram: d.Diagram) -> float:
-        diagram = self.generate_diagram(rng)
-        return d.bottleneck_distance(diagram, reference_diagram)
+    def generate_diagram(self, points: np.array) -> List[np.ndarray]:
+        filtration = Rips(maxdim=self.max_simplex_dim)
+        diagrams = filtration.fit_transform(points)
+        return diagrams
 
+    def generate_points(self, rng: RNG) -> np.array:
+        return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
