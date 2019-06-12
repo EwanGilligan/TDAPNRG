@@ -12,3 +12,5 @@ python-implementation/src/generator/__pycache__/
 *.gz
 
 python-implementation/src/randology/__pycache__/
+
+*.html

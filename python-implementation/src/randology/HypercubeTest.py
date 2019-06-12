@@ -8,7 +8,15 @@ from matplotlib import pyplot
 from src.generator import RNG
 
 
-def create_filtration_range(n=20, max_value=0.1):
+def create_filtration_range(n: int = 20, max_value: int = 0.1) -> np.array:
+    """
+    Creates an evenly spaced interval to use as a range of filtration values.
+
+    :rtype: np.array
+    :param n: Number of values in the filtration (20 by default).
+    :param max_value: The maximum value in the filtration range.
+    :return: array containing the filtration range.
+    """
     return np.linspace(0, max_value, n)
 
 
@@ -16,7 +24,19 @@ class HypercubeTest:
 
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  max_simplex_dim: int = 1,
-                 filtration_size: int = 20, max_filtration_value: int = 0.1) -> None:
+                 filtration_size: int = 20, max_filtration_value: int = 0.1):
+        """
+        Initialises a new HypercubeTest object.
+
+        :rtype: None
+        :param reference_rng: Random number generator to use to create a reference distribution.
+        :param number_of_points: Number of points to generate for the point cloud.
+        :param runs: How many times to run the test.
+        :param dimension: The dimension of the hypercube to consider.
+        :param max_simplex_dim: The maximum simplex dimension to be computed.
+        :param filtration_size: Size of the filtration range to be used.
+        :param max_filtration_value: The maximum value in the filtration, also the threshold value of the complex.
+        """
         self.runs = runs
         self.number_of_points = number_of_points
         self.dimension = dimension
@@ -53,8 +73,6 @@ class HypercubeTest:
 
     def single_run(self, rng: RNG):
         observed_distribution = self.generate_distribution(rng)
-        print(observed_distribution)
-        print(self.reference_distribution)
         return stats.chisquare(f_obs=observed_distribution, f_exp=self.reference_distribution)[1]
 
     def perform_test(self, rng: RNG):
