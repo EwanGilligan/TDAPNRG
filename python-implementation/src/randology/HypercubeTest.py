@@ -7,8 +7,8 @@ from matplotlib import pyplot
 
 from src.generator import RNG
 
-def create_filtration_range(n=100):
-    return np.array([x*float(1/n) for x in range(n)])
+def create_filtration_range(n=100, max_value=1.0):
+    return np.linspace(0, max_value, n)
 
 
 class HypercubeTest:
@@ -22,12 +22,14 @@ class HypercubeTest:
 
     def single_run(self, rng: RNG, reference_diagram: d.Diagram):
         points = self.generate_points(rng)
-        filtration_range = create_filtration_range(self.filtration_size)
+        filtration_range = create_filtration_range(self.filtration_size, 0.1)
         diagrams = self.generate_diagram(points)
         homology = {dimension : np.zeros(self.filtration_size) for dimension in range(self.max_simplex_dim + 1)}
+        print(diagrams)
         for dimension, diagram, in enumerate(diagrams):
             if dimension <= self.max_simplex_dim and len(diagram) > 0:
-                pass
+                homology[dimension] = np.array([np.array(((filtration_range >= point[0]) & (filtration_range <= point[1])).astype(int)) for point in diagram]).sum(axis=0).tolist()
+        print(homology)
 
     def generate_diagram(self, points: np.array) -> List[np.ndarray]:
         filtration = Rips(maxdim=self.max_simplex_dim)
