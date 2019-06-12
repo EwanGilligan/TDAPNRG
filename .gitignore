@@ -10,3 +10,5 @@ python-implementation/src/generator/__pycache__/
 2018-09-04-14-25-00_GUDHI_2\.3\.0/
 
 *.gz
+
+python-implementation/src/randology/__pycache__/

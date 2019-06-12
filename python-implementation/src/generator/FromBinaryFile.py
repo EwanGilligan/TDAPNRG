@@ -1,5 +1,6 @@
 from src.generator.RNG import RNG
 import sys
+import numpy as np
 
 
 class FromBinaryFile(RNG):
@@ -24,7 +25,7 @@ class FromBinaryFile(RNG):
         return np.int64(int.from_bytes(self.f.read(8), byteorder="little", signed=True))
 
     def next_float(self):
-        return np.float64(abs(self.next_int() / (2^63 - 1)))
+        return np.float64(abs(self.next_int() / (2**63 - 1)))
 
     def next_64_bits(self):
         return np.int64(self.next_int())
