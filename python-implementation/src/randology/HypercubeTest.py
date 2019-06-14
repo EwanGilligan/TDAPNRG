@@ -164,6 +164,10 @@ class HypercubeTest:
         reference_point_cloud = generate_points(self.reference_rng, self.dimension, self.number_of_points)
         diagram = self.generate_diagrams(reference_point_cloud)[self.homology_dimension]
         # This should be point before the diagram becomes fully connected.
-        epsilon = diagram[-2][1]
+        epsilon = 0
+        for point in reversed(diagram):
+            if not np.isinf(point[1]):
+                epsilon = point[1]
+                break
         filename = '../visualisations/{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points, epsilon)
         visualise_point_cloud(point_cloud, epsilon, 10, filename)
