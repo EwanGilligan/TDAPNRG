@@ -21,6 +21,10 @@ def make_spare_dm(points, thresh):
     return sparse.coo_matrix((v, (i, j)), shape=(m, n)).tocsr()
 
 
+def generate_points(rng: RNG, dimension: int, number_of_points: int) -> np.array:
+    return np.array([[rng.next_float() for _ in range(dimension)] for _ in range(number_of_points)])
+
+
 class HypercubeTest:
 
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
@@ -46,10 +50,10 @@ class HypercubeTest:
         # self.filtration_size = len(self.filtration_range)
         self.filtration_size = filtration_size
         self.filtration_range = self.create_filtration_range(max_filtration_value)
-        self.reference_distribution = self.generate_distribution(reference_rng)
+        self.reference_rng = reference_rng
 
     def generate_distribution(self, rng: RNG):
-        points = self.generate_points(rng)
+        points = generate_points(rng, self.dimension, self.number_of_points)
         diagrams = self.generate_diagram(points)
         del points
         gc.collect()
@@ -61,27 +65,26 @@ class HypercubeTest:
         diagrams = filtration.fit_transform(points)
         return diagrams
 
-    def generate_points(self, rng: RNG) -> np.array:
-        return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
-
     def generate_homology(self, diagrams):
         homology = {dimension: np.zeros(self.filtration_size) for dimension in range(self.homology_dimension + 1)}
         for dimension, diagram, in enumerate(diagrams):
             if dimension <= self.homology_dimension and len(diagram) > 0:
                 homology[dimension] = np.array(
-                    [np.array(((self.filtration_range >= point[0]) & (self.filtration_range <= point[1])).astype(int))
+                    [np.array(((self.filtration_range >= point[0]) & (self.filtration_range <= point[1]))).astype(int)
                      for point
                      in diagram]).sum(axis=0).tolist()
         return homology
 
-    def single_run(self, rng: RNG):
+    def single_run(self, rng: RNG, reference_distribution: np.array):
         observed_distribution = self.generate_distribution(rng)
-        return stats.chisquare(f_obs=observed_distribution, f_exp=self.reference_distribution)[1]
+        return stats.chisquare(f_obs=observed_distribution, f_exp=reference_distribution)[1]
 
     def perform_test(self, rng: RNG):
         passes = 0
+        reference_distribution = self.generate_distribution(self.reference_rng)
+        print(reference_distribution)
         for i in range(self.runs):
-            if self.single_run(rng) > 0.01:
+            if self.single_run(rng, reference_distribution) > 0.01:
                 passes += 1
         return passes
 
