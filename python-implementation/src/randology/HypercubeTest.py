@@ -8,6 +8,7 @@ from scipy import sparse
 from sklearn.metrics.pairwise import pairwise_distances
 
 from src.generator import RNG
+from src.randology.visualiser import visualise_point_cloud
 
 
 def make_spare_dm(points, thresh):
@@ -73,14 +74,14 @@ class HypercubeTest:
         :return: Array containing the betti numbers associated with each filtration value.
         """
         points = generate_points(rng, self.dimension, self.number_of_points)
-        diagrams = self.generate_diagram(points)
+        diagrams = self.generate_diagrams(points)
         # An attempt to reduce memory usage, might not work
         del points
         gc.collect()
         homology = self.generate_homology(diagrams)
         return homology[self.homology_dimension]
 
-    def generate_diagram(self, points: np.array) -> List[np.ndarray]:
+    def generate_diagrams(self, points: np.array) -> List[np.ndarray]:
         """
         Generates the persistence diagrams from the given point cloud.
 
@@ -157,3 +158,12 @@ class HypercubeTest:
             return np.linspace(0, max_value, self.filtration_size)
         else:
             return np.linspace(0, 1 / self.dimension, self.filtration_size)
+
+    def visualise_failure(self, rng: RNG):
+        point_cloud = generate_points(rng, self.dimension, self.number_of_points)
+        reference_point_cloud = generate_points(self.reference_rng, self.dimension, self.number_of_points)
+        diagram = self.generate_diagrams(reference_point_cloud)[self.homology_dimension]
+        # This should be point before the diagram becomes fully connected.
+        epsilon = diagram[-2][1]
+        filename = '../visualisations/{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points, epsilon)
+        visualise_point_cloud(point_cloud, epsilon, 10, filename)
