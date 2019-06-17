@@ -11,15 +11,14 @@ from src.generator import RNG
 from src.randology.visualiser import visualise_point_cloud
 
 
-def make_spare_dm(points, thresh):
-    m = points.shape[0]
-    n = points.shape[1]
-    d = pairwise_distances(points, metric='euclidean')
-    [i, j] = np.meshgrid(np.arange(n))
-    i = i[d <= thresh]
-    j = j[d <= thresh]
-    v = d[d <= thresh]
-    return sparse.coo_matrix((v, (i, j)), shape=(m, n)).tocsr()
+def make_sparse_dm(points : np.array, thresh):
+    n = points.shape[0]
+    distance_matrix = pairwise_distances(points)
+    [i, j] = np.meshgrid(np.arange(n), np.arange(n))
+    i = i[distance_matrix <= thresh]
+    j = j[distance_matrix <= thresh]
+    v = distance_matrix[distance_matrix <= thresh]
+    return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
 
 def generate_points(rng: RNG, dimension: int, number_of_points: int) -> np.array:
@@ -60,6 +59,7 @@ class HypercubeTest:
         # self.filtration_size = len(self.filtration_range)
         self.filtration_size = filtration_size
         self.filtration_range = self.create_filtration_range(max_filtration_value)
+        self.filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
         self.reference_rng = reference_rng
 
     def generate_distribution(self, rng: RNG):
@@ -74,25 +74,26 @@ class HypercubeTest:
         :return: Array containing the betti numbers associated with each filtration value.
         """
         points = generate_points(rng, self.dimension, self.number_of_points)
-        diagrams = self.generate_diagrams(points)
+        #distance_matrix = pairwise_distances(points)
+        sparse_distance_matrix = make_sparse_dm(points, self.filtration_range[-1])
         # An attempt to reduce memory usage, might not work
         del points
         gc.collect()
+        diagrams = self.generate_diagrams(sparse_distance_matrix)
         homology = self.generate_homology(diagrams)
         return homology[self.homology_dimension]
 
-    def generate_diagrams(self, points: np.array) -> List[np.ndarray]:
+    def generate_diagrams(self, distance_matrix) -> List[np.ndarray]:
         """
-        Generates the persistence diagrams from the given point cloud.
+        Generates the persistence diagrams from the given distance matrix.
 
+        :param distance_matrix: distance matrix of the point cloud.
         :rtype: dict
-        :param points: Point cloud to generate diagram for.
         :return: A list of persistence diagrams,  one for each dimension less than maximum homology dimension.
         Each diagram is an ndarray of size (n_pairs, 2) with the first column representing the birth time and
         the second column representing the death time of each pair.
         """
-        filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
-        diagrams = filtration.fit_transform(points)
+        diagrams = self.filtration.fit_transform(distance_matrix, distance_matrix=True)
         return diagrams
 
     def generate_homology(self, diagrams):
@@ -137,6 +138,7 @@ class HypercubeTest:
         passes = 0
         reference_distribution = self.generate_distribution(self.reference_rng)
         for i in range(self.runs):
+            gc.collect()
             # if the p value is greater than 0.01
             if self.single_run(rng, reference_distribution) > 0.01:
                 passes += 1
@@ -162,7 +164,7 @@ class HypercubeTest:
     def visualise_failure(self, rng: RNG):
         point_cloud = generate_points(rng, self.dimension, self.number_of_points)
         reference_point_cloud = generate_points(self.reference_rng, self.dimension, self.number_of_points)
-        diagram = self.generate_diagrams(reference_point_cloud)[self.homology_dimension]
+        diagram = self.generate_diagrams(pairwise_distances(reference_point_cloud))[self.homology_dimension]
         # This should be point before the diagram becomes fully connected.
         epsilon = 0
         for point in reversed(diagram):
