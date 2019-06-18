@@ -7,7 +7,7 @@ class FromBinaryFile(RNG):
     def __init__(self, filepath: str, size: int):
         RNG.__init__(self, "File-" + filepath.replace('/', '-'))
         try:
-            self.f = open(filepath, "rb")#, size * 64)
+            self.f = open(filepath, "rb", size * 64)
         except IOError:
             print("Couldn't open file:", filepath)
             exit(1)
