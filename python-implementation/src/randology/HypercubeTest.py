@@ -23,22 +23,10 @@ def make_sparse_dm(points: np.array, thresh):
     return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
 
-def generate_points(rng: RNG.RNG, dimension: int, number_of_points: int) -> np.array:
-    """
-    Generates a set of vectors in [0,1]^dimension hypercube.
-
-    :rtype: np.array
-    :param rng: Random number generator to use.
-    :param dimension: Dimension of the hypercube
-    :param number_of_points: Number of vectors to generate
-    :return: Array of vectors representing point cloud in a hypercube.
-    """
-    return np.array([[rng.next_float() for _ in range(dimension)] for _ in range(number_of_points)])
-
-
 class HypercubeTest:
 
     def __init__(self, reference_rng: RNG.RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
+                 scale: float = 1.0,
                  homology_dimension: int = 0,
                  filtration_size: int = 20, max_filtration_value: float = None):
         """
@@ -60,9 +48,46 @@ class HypercubeTest:
         # self.filtration_range = np.array([0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.070, 0.075, 0.08, 0.085, 0.09, 0.095])
         # self.filtration_size = len(self.filtration_range)
         self.filtration_size = filtration_size
+        self.scale = scale
         self.filtration_range = self.create_filtration_range(max_filtration_value)
         self.filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
         self.reference_rng = reference_rng
+
+    def generate_points(self, rng: RNG.RNG) -> np.array:
+        """
+        Generates a set of vectors in [0,1]^dimension hypercube.
+
+        :rtype: np.array
+        :param rng: Random number generator to use.
+        :param dimension: Dimension of the hypercube
+        :param number_of_points: Number of vectors to generate
+        :return: Array of vectors representing point cloud in a hypercube.
+        """
+
+        # points = []
+        # for _ in range(self.number_of_points):
+        #     point = []
+        #     for _ in range(self.dimension):
+        #         value = rng.next_float()
+        #         while value > self.scale:
+        #             value = rng.next_float()
+        #         point.append(value)
+        #     points.append(points)
+        # return np.array(points)
+
+        # function to generate a point.
+        def generate_point(i, j):
+            # i and j are required for np.fromfunction, but not used.
+            del i, j
+            value = rng.next_float()
+            while value > self.scale:
+                value = rng.next_float()
+            return value
+
+        # Then creates the array using said function.
+        return np.fromfunction(np.vectorize(generate_point), (self.number_of_points, self.dimension))
+
+        # return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
 
     def generate_distribution(self, rng: RNG.RNG):
         """
@@ -158,10 +183,10 @@ class HypercubeTest:
         if max_filtration_value is not None:
             return np.linspace(0, max_filtration_value, self.filtration_size)
         if self.homology_dimension == 0:
-            max_value = 10.0 / (self.number_of_points ** (1.0 / self.dimension))
+            max_value = self.scale * 10.0 / (self.number_of_points ** (1.0 / self.dimension))
             return np.linspace(0, max_value, self.filtration_size)
         else:
-            return np.linspace(0, 1 / self.dimension, self.filtration_size)
+            return np.linspace(0, self.scale * 1 / self.dimension, self.filtration_size)
 
     def visualise_failure(self, rng: RNG.RNG):
         point_cloud = generate_points(rng, self.dimension, self.number_of_points)
