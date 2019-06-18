@@ -14,3 +14,7 @@ python-implementation/src/generator/__pycache__/
 python-implementation/src/randology/__pycache__/
 
 *.html
+
+pseudo-random-sequences/
+
+end-to-end-latex/
