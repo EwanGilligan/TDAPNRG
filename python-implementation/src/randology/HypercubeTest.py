@@ -100,7 +100,7 @@ class HypercubeTest:
         :param rng: random number generator to create a distribution for.
         :return: Array containing the betti numbers associated with each filtration value.
         """
-        points = generate_points(rng, self.dimension, self.number_of_points)
+        points = self.generate_points(rng)
         # distance_matrix = pairwise_distances(points)
         sparse_distance_matrix = make_sparse_dm(points, self.filtration_range[-1])
         # An attempt to reduce memory usage, might not work
