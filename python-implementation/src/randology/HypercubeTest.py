@@ -178,11 +178,16 @@ class HypercubeTest:
         visualise_point_cloud(point_cloud, epsilon, 10, filename)
 
     def test_directory(self, directory_path):
+        generators = []
         for filename in os.listdir(directory_path):
-            test_rng = FromBinaryFile.FromBinaryFile(directory_path + '/' + filename, self.runs)
+            generators.append(FromBinaryFile.FromBinaryFile(directory_path + '/' + filename, self.runs))
+        self.test_generator_list(generators)
+
+    def test_generator_list(self, generators):
+        for rng in generators:
             start = time.time()
-            passes = self.perform_test(test_rng)
+            passes = self.perform_test(rng)
             end = time.time()
-            print('{}:{}/{}'.format(test_rng.get_name(), passes, self.runs))
+            print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
             print("Time elapsed:", end - start)
         print("Done")
