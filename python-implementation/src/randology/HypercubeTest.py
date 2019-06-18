@@ -11,7 +11,7 @@ from src.generator import RNG
 from src.randology.visualiser import visualise_point_cloud
 
 
-def make_sparse_dm(points : np.array, thresh):
+def make_sparse_dm(points: np.array, thresh):
     n = points.shape[0]
     distance_matrix = pairwise_distances(points)
     [i, j] = np.meshgrid(np.arange(n), np.arange(n))
@@ -74,7 +74,7 @@ class HypercubeTest:
         :return: Array containing the betti numbers associated with each filtration value.
         """
         points = generate_points(rng, self.dimension, self.number_of_points)
-        #distance_matrix = pairwise_distances(points)
+        # distance_matrix = pairwise_distances(points)
         sparse_distance_matrix = make_sparse_dm(points, self.filtration_range[-1])
         # An attempt to reduce memory usage, might not work
         del points
@@ -138,7 +138,7 @@ class HypercubeTest:
         passes = 0
         reference_distribution = self.generate_distribution(self.reference_rng)
         for i in range(self.runs):
-            gc.collect()
+            # gc.collect()
             # if the p value is greater than 0.01
             if self.single_run(rng, reference_distribution) > 0.01:
                 passes += 1
@@ -171,5 +171,6 @@ class HypercubeTest:
             if not np.isinf(point[1]):
                 epsilon = point[1]
                 break
-        filename = '../visualisations/{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points, epsilon)
+        filename = '../visualisations/{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points,
+                                                                epsilon)
         visualise_point_cloud(point_cloud, epsilon, 10, filename)
