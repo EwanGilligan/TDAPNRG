@@ -18,3 +18,9 @@ python-implementation/src/randology/__pycache__/
 pseudo-random-sequences/
 
 end-to-end-latex/
+
+*.pyc
+
+/dist/
+
+/*.egg-info
