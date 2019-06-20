@@ -24,3 +24,5 @@ end-to-end-latex/
 /dist/
 
 /*.egg-info
+
+python-implementation/src/randology\.egg-info/
