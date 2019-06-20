@@ -1,4 +1,4 @@
-import gc
+
 import os
 import time
 
@@ -105,7 +105,6 @@ class HypercubeTest:
         sparse_distance_matrix = make_sparse_dm(points, self.filtration_range[-1])
         # An attempt to reduce memory usage, might not work
         del points
-        gc.collect()
         diagrams = self.generate_diagrams(sparse_distance_matrix)
         homology = self.generate_homology(diagrams)
         return homology[self.homology_dimension]
@@ -166,7 +165,6 @@ class HypercubeTest:
         passes = 0
         reference_distribution = self.generate_distribution(self.reference_rng)
         for i in range(self.runs):
-            # gc.collect()
             # if the p value is greater than 0.01
             if self.single_run(rng, reference_distribution) > 0.01:
                 passes += 1
