@@ -215,3 +215,4 @@ class HypercubeTest:
             print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
             print("Time elapsed:", end - start)
         print("Done")
+

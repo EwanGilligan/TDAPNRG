@@ -1,2 +1,2 @@
-from .visualiser import visualise_point_cloud
-from .HypercubeTest import HypercubeTest
+from .visualiser import *
+from .HypercubeTest import HypercubeTest, make_sparse_dm
