@@ -4,6 +4,8 @@ import numpy as np
 from ripser import ripser
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import plotly
+import plotly.graph_objs as go
 
 
 def visualise_point_cloud(point_cloud: np.ndarray, epsilon: float, n_cubes: int, filename):
@@ -62,3 +64,47 @@ def plot_3d(point_cloud_array):
         ys = np.take(point_cloud, [1], axis=1)
         zs = np.take(point_cloud, [2], axis=1)
         ax.scatter(xs, ys, zs, '.', s=1)
+
+
+def plot_3d_interactive(point_clouds, title):
+    assert len(point_clouds) > 0, "Plot data is empty"
+    data = []
+    for point_cloud in point_clouds:
+        xs = np.take(point_cloud, 0, axis=1)
+        ys = np.take(point_cloud, 1, axis=1)
+        zs = np.take(point_cloud, 2, axis=1)
+        data.append(go.Scatter3d(x=xs.tolist(),
+                                 y=ys.tolist(),
+                                 z=zs.tolist(),
+                                 mode='markers',
+                                 marker=dict(
+                                     size=2,
+                                 )
+                                 )
+                    )
+    plotly.offline.plot({
+        "data": data,
+        "layout": go.Layout(title=title),
+    }, filename=title + ".html")
+
+
+def plot_connected_components(x, title):
+    result = ripser(x, thresh=0.1, do_cocycles=True)
+    cocycles = result['cocycles']
+    diagrams = result['dgms']
+    dgm1 = diagrams[1]
+    # large_cocyles = filter(lambda c: len(c) > x.shape[0] / 15, cocycles[1])
+    idx = np.argmax([len(x) for x in cocycles[1]])
+    large_cocyles = [cocycles[1][idx]]
+    # idx = np.argmax(dgm1[:, 1] - dgm1[:, 0])
+    # cocycle = cocycles[1][idx]
+    # D = result['dperm2all']
+    # thresh = dgm1[idx, 1]
+    point_clouds = []
+    for cocycle in large_cocyles:
+        column1 = np.take(cocycle, 0, axis=1)
+        column2 = np.take(cocycle, 1, axis=1)
+        indices = np.unique(np.concatenate((column1, column2)))
+        cocycle_points = np.array([x[i] for i in indices])
+        point_clouds.append(cocycle_points)
+    plot_3d_interactive(point_clouds, title)
