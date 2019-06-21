@@ -1,4 +1,3 @@
-
 import os
 import time
 
@@ -21,6 +20,44 @@ def make_sparse_dm(points: np.array, thresh):
     j = j[distance_matrix <= thresh]
     v = distance_matrix[distance_matrix <= thresh]
     return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
+
+
+def generate_points(rng: RNG, number_of_points, dimension, scale) -> np.array:
+    """
+    Generates a set of vectors in [0,1]^dimension hypercube.
+
+    :param scale:
+    :rtype: np.array
+    :param rng: Random number pnrg to use.
+    :param dimension: Dimension of the hypercube
+    :param number_of_points: Number of vectors to generate
+    :return: Array of vectors representing point cloud in a hypercube.
+    """
+
+    # points = []
+    # for _ in range(self.number_of_points):
+    #     point = []
+    #     for _ in range(self.dimension):
+    #         value = rng.next_float()
+    #         while value > self.scale:
+    #             value = rng.next_float()
+    #         point.append(value)
+    #     points.append(points)
+    # return np.array(points)
+
+    # function to generate a point.
+    def generate_point(i, j):
+        # i and j are required for np.fromfunction, but not used.
+        del i, j
+        value = rng.next_float()
+        while value > scale:
+            value = rng.next_float()
+        return value
+
+    # Then creates the array using said function.
+    return np.fromfunction(np.vectorize(generate_point), (number_of_points, dimension))
+
+    # return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
 
 
 class HypercubeTest:
@@ -53,42 +90,6 @@ class HypercubeTest:
         self.filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
         self.reference_rng = reference_rng
 
-    def generate_points(self, rng: RNG) -> np.array:
-        """
-        Generates a set of vectors in [0,1]^dimension hypercube.
-
-        :rtype: np.array
-        :param rng: Random number pnrg to use.
-        :param dimension: Dimension of the hypercube
-        :param number_of_points: Number of vectors to generate
-        :return: Array of vectors representing point cloud in a hypercube.
-        """
-
-        # points = []
-        # for _ in range(self.number_of_points):
-        #     point = []
-        #     for _ in range(self.dimension):
-        #         value = rng.next_float()
-        #         while value > self.scale:
-        #             value = rng.next_float()
-        #         point.append(value)
-        #     points.append(points)
-        # return np.array(points)
-
-        # function to generate a point.
-        def generate_point(i, j):
-            # i and j are required for np.fromfunction, but not used.
-            del i, j
-            value = rng.next_float()
-            while value > self.scale:
-                value = rng.next_float()
-            return value
-
-        # Then creates the array using said function.
-        return np.fromfunction(np.vectorize(generate_point), (self.number_of_points, self.dimension))
-
-        # return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
-
     def generate_distribution(self, rng: RNG):
         """
         Takes the random number pnrg, and then generates the distribution of betti numbers for that RNG.RNG.
@@ -100,7 +101,7 @@ class HypercubeTest:
         :param rng: random number pnrg to create a distribution for.
         :return: Array containing the betti numbers associated with each filtration value.
         """
-        points = self.generate_points(rng)
+        points = generate_points(rng, self.number_of_points, self.dimension, self.scale)
         # distance_matrix = pairwise_distances(points)
         sparse_distance_matrix = make_sparse_dm(points, self.filtration_range[-1])
         # An attempt to reduce memory usage, might not work
@@ -188,8 +189,8 @@ class HypercubeTest:
             return np.linspace(0, self.scale * 1 / self.dimension, self.filtration_size)
 
     def visualise_failure(self, rng: RNG):
-        point_cloud = self.generate_points(rng)
-        reference_point_cloud = self.generate_points(self.reference_rng)
+        point_cloud = generate_points(rng, self.number_of_points, self.dimension, self.scale)
+        reference_point_cloud = generate_points(self.reference_rng, self.number_of_points, self.dimension, self.scale)
         diagram = self.generate_diagrams(pairwise_distances(reference_point_cloud))[self.homology_dimension]
         # This should be point before the diagram becomes fully connected.
         epsilon = 0
@@ -215,4 +216,3 @@ class HypercubeTest:
             print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
             print("Time elapsed:", end - start)
         print("Done")
-

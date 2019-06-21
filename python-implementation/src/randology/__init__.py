@@ -1,2 +1,2 @@
 from .visualiser import *
-from .HypercubeTest import HypercubeTest, make_sparse_dm
+from .HypercubeTest import HypercubeTest, make_sparse_dm, generate_points
