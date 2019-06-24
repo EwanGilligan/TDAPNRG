@@ -7,6 +7,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import plotly
 import plotly.graph_objs as go
 
+kelly_colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1', '#BE0032', '#C2B280', '#848482',
+                '#008856', '#E68FAC', '#0067A5', '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17',
+                '#8DB600', '#654522', '#E25822', '#2B3D26'][1:]  # skip white
+
 
 def visualise_point_cloud(point_cloud: np.ndarray, epsilon: float, n_cubes: int, filename):
     mapper = km.KeplerMapper(verbose=1)
@@ -125,7 +129,8 @@ def plot_complex(x, edges, title):
 def plot_complexes(x, edges_group, title):
     data = []
     i = 0
-    for edges in edges_group:
+    assert len(edges_group) <= len(kelly_colors), "Not enough colours"
+    for edges, colour in zip(edges_group, kelly_colors):
         # Takes the unique indices in the cocycle
         nodes = np.unique([edges[:, 0], edges[:, 1]])
         # Coordinates of nodes
@@ -146,31 +151,31 @@ def plot_complexes(x, edges_group, title):
                                    z=zn,
                                    mode='markers',
                                    marker=dict(symbol='circle',
-                                               size=6,
-                                               color=i,
-                                               colorscale='Viridis'))
+                                               size=2,
+                                               color='black'))
 
         # data for the edges
         edge_trace = go.Scatter3d(x=xe,
                                   y=ye,
                                   z=ze,
                                   mode='lines',
-                                  line=dict(colorscale='Viridis', color=i))
+                                  line=dict(color=colour))
 
         data += [point_trace, edge_trace]
-        i += 1
+
     plotly.offline.plot({
         "data": data,
         "layout": go.Layout(title=title)
     }, filename=title + ".html")
 
 
-def plot_connected_components(x, title):
+def plot_connected_components(x, title, n_largest=10):
     result = ripser(x, thresh=0.1, do_cocycles=True)
     cocycles = result['cocycles']
     diagrams = result['dgms']
     dgm1 = diagrams[1]
-    large_cocyles = filter(lambda c: len(c) > x.shape[0] / 15, cocycles[1])
+    large_cocyles = sorted(cocycles[1], key=lambda c: len(c), reverse=True)[:n_largest]
+    #large_cocyles = list(filter(lambda c: len(c) > x.shape[0] / 10, cocycles[1]))
     idx = np.argmax([len(x) for x in cocycles[1]])
     # plot_cocycle(x, cocycles[1][idx], title)
     # large_cocyles = [cocycles[1][idx]]
