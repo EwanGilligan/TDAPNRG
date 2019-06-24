@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import plotly
 import plotly.graph_objs as go
+from itertools import cycle
 
 kelly_colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1', '#BE0032', '#C2B280', '#848482',
                 '#008856', '#E68FAC', '#0067A5', '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17',
@@ -20,43 +21,6 @@ def visualise_point_cloud(point_cloud: np.ndarray, epsilon: float, n_cubes: int,
     clusterer = cluster.DBSCAN(eps=epsilon)
     graph = mapper.map(projected_data, point_cloud, cover=km.Cover(n_cubes=n_cubes), nerve=nerve, clusterer=clusterer)
     mapper.visualize(graph, path_html=filename)
-
-
-def draw_line_coloured(x, c):
-    for i in range(x.shape[0] - 1):
-        plt.plot(x[i:i + 2, 0], x[i:i + 2, 1], c=c[i, :], lineWidth=3)
-
-
-def plot_cocycle_2d(d, x, cocycle, thresh):
-    """
-    Given a 2D point cloud x, display a cocycle projected
-    onto edges under a given threshold "thresh"
-    """
-    # Plot all edges under the threshold
-    n = x.shape[0]
-    t = np.linspace(0, 1, 10)
-    c = plt.get_cmap('Greys')
-    c = c(np.array(np.round(np.linspace(0, 255, len(t))), dtype=np.int32))
-    c = c[:, 0:3]
-
-    for i in range(n):
-        for j in range(n):
-            if d[i, j] <= thresh:
-                Y = np.zeros((len(t), 2))
-                Y[:, 0] = x[i, 0] + t * (x[j, 0] - x[i, 0])
-                Y[:, 1] = x[i, 1] + t * (x[j, 1] - x[i, 1])
-                draw_line_coloured(Y, c)
-    # Plot cocycle projected to edges under the chosen threshold
-    for k in range(cocycle.shape[0]):
-        [i, j, val] = cocycle[k, :]
-        if d[i, j] <= thresh:
-            [i, j] = [min(i, j), max(i, j)]
-            a = 0.5 * (x[i, :] + x[j, :])
-            plt.text(a[0], a[1], '%g' % val, color='b')
-    # Plot vertex labels
-    for i in range(n):
-        plt.text(x[i, 0], x[i, 1], '%i' % i, color='r')
-    plt.axis('equal')
 
 
 def plot_3d(point_cloud_array):
@@ -129,8 +93,7 @@ def plot_complex(x, edges, title):
 def plot_complexes(x, edges_group, title):
     data = []
     i = 0
-    assert len(edges_group) <= len(kelly_colors), "Not enough colours"
-    for edges, colour in zip(edges_group, kelly_colors):
+    for edges, colour in zip(edges_group, cycle(kelly_colors)):
         # Takes the unique indices in the cocycle
         nodes = np.unique([edges[:, 0], edges[:, 1]])
         # Coordinates of nodes
@@ -170,7 +133,9 @@ def plot_complexes(x, edges_group, title):
 
 
 def plot_connected_components(x, title, n_largest=10):
-    result = ripser(x, thresh=0.1, do_cocycles=True)
+    threshhold = 2 / x.shape[0] ** (1 / x.shape[1])
+    print(threshhold)
+    result = ripser(x, thresh=threshhold, do_cocycles=True)
     cocycles = result['cocycles']
     diagrams = result['dgms']
     dgm1 = diagrams[1]
