@@ -70,9 +70,9 @@ def plot_3d_interactive(point_clouds, title):
     assert len(point_clouds) > 0, "Plot data is empty"
     data = []
     for point_cloud in point_clouds:
-        xs = np.take(point_cloud, 0, axis=1)
-        ys = np.take(point_cloud, 1, axis=1)
-        zs = np.take(point_cloud, 2, axis=1)
+        xs = point_cloud[:, 0]  # np.take(point_cloud, 0, axis=1)
+        ys = point_cloud[:, 1]  # np.take(point_cloud, 1, axis=1)
+        zs = point_cloud[:, 2]  # np.take(point_cloud, 2, axis=1)
         data.append(go.Scatter3d(x=xs.tolist(),
                                  y=ys.tolist(),
                                  z=zs.tolist(),
@@ -88,23 +88,113 @@ def plot_3d_interactive(point_clouds, title):
     }, filename=title + ".html")
 
 
+def plot_complex(x, edges, title):
+    # Takes the unique indices in the cocycle
+    nodes = np.unique([edges[:, 0], edges[:, 1]])
+    # Coordinates of nodes
+    xn = [x[k][0] for k in nodes]
+    yn = [x[k][1] for k in nodes]
+    zn = [x[k][2] for k in nodes]
+    # Coordinates of edge endings.
+    xe = []
+    ye = []
+    ze = []
+    for i, j, _ in edges:
+        xe += [x[i][0], x[j][0], None]
+        ye += [x[i][1], x[j][1], None]
+        ze += [x[i][2], x[j][2], None]
+    # data for the points
+    point_trace = go.Scatter3d(x=xn,
+                               y=yn,
+                               z=zn,
+                               mode='markers',
+                               marker=dict(symbol='circle',
+                                           size=6))
+    # data for the edges
+    edge_trace = go.Scatter3d(x=xe,
+                              y=ye,
+                              z=ze,
+                              mode='lines')
+    data = [point_trace, edge_trace]
+    plotly.offline.plot({
+        "data": data,
+        "layout": go.Layout(title=title)
+    }, filename=title + ".html")
+
+
+def plot_complexes(x, edges_group, title):
+    data = []
+    i = 0
+    for edges in edges_group:
+        # Takes the unique indices in the cocycle
+        nodes = np.unique([edges[:, 0], edges[:, 1]])
+        # Coordinates of nodes
+        xn = [x[k][0] for k in nodes]
+        yn = [x[k][1] for k in nodes]
+        zn = [x[k][2] for k in nodes]
+        # Coordinates of edge endings.
+        xe = []
+        ye = []
+        ze = []
+        for i, j, _ in edges:
+            xe += [x[i][0], x[j][0], None]
+            ye += [x[i][1], x[j][1], None]
+            ze += [x[i][2], x[j][2], None]
+        # data for the points
+        point_trace = go.Scatter3d(x=xn,
+                                   y=yn,
+                                   z=zn,
+                                   mode='markers',
+                                   marker=dict(symbol='circle',
+                                               size=6,
+                                               color=i,
+                                               colorscale='Viridis'))
+
+        # data for the edges
+        edge_trace = go.Scatter3d(x=xe,
+                                  y=ye,
+                                  z=ze,
+                                  mode='lines',
+                                  line=dict(colorscale='Viridis', color=i))
+
+        data += [point_trace, edge_trace]
+        i += 1
+    plotly.offline.plot({
+        "data": data,
+        "layout": go.Layout(title=title)
+    }, filename=title + ".html")
+
+
 def plot_connected_components(x, title):
     result = ripser(x, thresh=0.1, do_cocycles=True)
     cocycles = result['cocycles']
     diagrams = result['dgms']
     dgm1 = diagrams[1]
-    # large_cocyles = filter(lambda c: len(c) > x.shape[0] / 15, cocycles[1])
+    large_cocyles = filter(lambda c: len(c) > x.shape[0] / 15, cocycles[1])
     idx = np.argmax([len(x) for x in cocycles[1]])
-    large_cocyles = [cocycles[1][idx]]
+    # plot_cocycle(x, cocycles[1][idx], title)
+    # large_cocyles = [cocycles[1][idx]]
     # idx = np.argmax(dgm1[:, 1] - dgm1[:, 0])
     # cocycle = cocycles[1][idx]
     # D = result['dperm2all']
     # thresh = dgm1[idx, 1]
-    point_clouds = []
-    for cocycle in large_cocyles:
-        column1 = np.take(cocycle, 0, axis=1)
-        column2 = np.take(cocycle, 1, axis=1)
-        indices = np.unique(np.concatenate((column1, column2)))
-        cocycle_points = np.array([x[i] for i in indices])
-        point_clouds.append(cocycle_points)
-    plot_3d_interactive(point_clouds, title)
+    # edges = []
+    # n = x.shape[0]
+    # for i in range(n):
+    #     for j in range(n):
+    #         if D[i, j] <= thresh:
+    #             edges.append([i, j])
+    plot_complexes(x, large_cocyles, title)
+
+    # point_clouds = []
+    # for cocycle in large_cocyles:
+    #     # column1 = np.take(cocycle, 0, axis=1)
+    #     # column2 = np.take(cocycle, 1, axis=1)
+    #     # indices = np.unique(np.concatenate((column1, column2)))
+    #     # cocycle_points = np.array([x[i] for i in indices])
+    #     cocycle_points = []
+    #     for point1, point2, _ in cocycle:
+    #         cocycle_points.append(x[point1])
+    #         cocycle_points.append(x[point2])
+    #     point_clouds.append(np.array(cocycle_points))
+    # plot_3d_interactive(point_clouds, title)
