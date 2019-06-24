@@ -183,7 +183,7 @@ class HypercubeTest:
         if max_filtration_value is not None:
             return np.linspace(0, max_filtration_value, self.filtration_size)
         if self.homology_dimension == 0:
-            max_value = self.scale * 10 / (self.number_of_points ** (1.0 / self.dimension))
+            max_value = self.scale * (2 / self.number_of_points ** (1.0 / self.dimension))
             return np.linspace(0, max_value, self.filtration_size)
         else:
             return np.linspace(0, self.scale * 1 / self.dimension, self.filtration_size)
