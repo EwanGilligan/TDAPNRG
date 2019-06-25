@@ -8,6 +8,7 @@ import plotly
 import plotly.graph_objs as go
 from itertools import cycle
 
+# Distinct colours to use for plotting.
 kelly_colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1', '#BE0032', '#C2B280', '#848482',
                 '#008856', '#E68FAC', '#0067A5', '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17',
                 '#8DB600', '#654522', '#E25822', '#2B3D26'][1:]  # skip white
@@ -34,7 +35,13 @@ def plot_3d(point_cloud_array):
         ax.scatter(xs, ys, zs, '.', s=1)
 
 
-def plot_3d_interactive(point_clouds, title):
+def plot_3d_interactive(point_clouds, title) -> None:
+    """
+    Create an interactive plot of the point clouds supplied.
+
+    :param point_clouds: Iterable containing point clouds.
+    :param title: Title of the plot.
+    """
     assert len(point_clouds) > 0, "Plot data is empty"
     data = []
     for point_cloud in point_clouds:
@@ -91,6 +98,14 @@ def plot_complex(x, edges, title):
 
 
 def plot_complexes(x, edges_group, title, filepath):
+    """
+    Plot the cocyles in the edge group.
+
+    :param x: Point cloud of the data.
+    :param edges_group: Iterable containing the cocyles to plot.
+    :param title: Title of the plot.
+    :param filepath: Where to store the plot.
+    """
     data = []
     for edges, colour in zip(edges_group, cycle(kelly_colors)):
         # Takes the unique indices in the cocycle
@@ -132,6 +147,14 @@ def plot_complexes(x, edges_group, title, filepath):
 
 
 def plot_connected_components(x, title, filepath,  n_largest=10):
+    """
+    Plot the n largest cocycles from the point cloud x.
+
+    :param x: point cloud to plot
+    :param title: The title of the plot
+    :param filepath: filepath to where to store the plot
+    :param n_largest: How many cocycles should be plotted. The n largest of the cocycles will be included in the plot.
+    """
     threshhold = 2 / x.shape[0] ** (1 / x.shape[1])
     print(threshhold)
     result = ripser(x, thresh=threshhold, do_cocycles=True)

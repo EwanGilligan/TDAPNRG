@@ -203,12 +203,23 @@ class HypercubeTest:
         visualise_point_cloud(point_cloud, epsilon, 10, filename)
 
     def test_directory(self, directory_path):
+        """
+        Perform the Unit Hypercube Test on a directory of binary files that are the output to a RNG.
+
+        :param directory_path: Path to the directory containing the binary files.
+        """
         generators = []
         for filename in os.listdir(directory_path):
             generators.append(FromBinaryFile(directory_path + '/' + filename, self.runs))
         self.test_generator_list(generators)
 
-    def test_generator_list(self, generators):
+    def test_generator_list(self, generators) -> None:
+        """
+        Takes and list of RNGs and then performs the Unit Hypercube test on all of them, printing the result of each
+        test to the console. The time taken for each test is also printed.
+
+        :param generators: Iterable object containing a list of RNG type objects to be tested.
+        """
         for rng in generators:
             start = time.time()
             passes = self.perform_test(rng)
