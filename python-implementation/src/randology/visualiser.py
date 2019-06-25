@@ -90,9 +90,8 @@ def plot_complex(x, edges, title):
     }, filename=title + ".html")
 
 
-def plot_complexes(x, edges_group, title):
+def plot_complexes(x, edges_group, title, filepath):
     data = []
-    i = 0
     for edges, colour in zip(edges_group, cycle(kelly_colors)):
         # Takes the unique indices in the cocycle
         nodes = np.unique([edges[:, 0], edges[:, 1]])
@@ -129,10 +128,10 @@ def plot_complexes(x, edges_group, title):
     plotly.offline.plot({
         "data": data,
         "layout": go.Layout(title=title)
-    }, filename=title + ".html")
+    }, filename=filepath + title + ".html")
 
 
-def plot_connected_components(x, title, n_largest=10):
+def plot_connected_components(x, title, filepath,  n_largest=10):
     threshhold = 2 / x.shape[0] ** (1 / x.shape[1])
     print(threshhold)
     result = ripser(x, thresh=threshhold, do_cocycles=True)
@@ -141,7 +140,7 @@ def plot_connected_components(x, title, n_largest=10):
     dgm1 = diagrams[1]
     large_cocyles = sorted(cocycles[1], key=lambda c: len(c), reverse=True)[:n_largest]
     #large_cocyles = list(filter(lambda c: len(c) > x.shape[0] / 10, cocycles[1]))
-    idx = np.argmax([len(x) for x in cocycles[1]])
+    #idx = np.argmax([len(x) for x in cocycles[1]])
     # plot_cocycle(x, cocycles[1][idx], title)
     # large_cocyles = [cocycles[1][idx]]
     # idx = np.argmax(dgm1[:, 1] - dgm1[:, 0])
@@ -154,7 +153,7 @@ def plot_connected_components(x, title, n_largest=10):
     #     for j in range(n):
     #         if D[i, j] <= thresh:
     #             edges.append([i, j])
-    plot_complexes(x, large_cocyles, title)
+    plot_complexes(x, large_cocyles, title, filepath)
 
     # point_clouds = []
     # for cocycle in large_cocyles:

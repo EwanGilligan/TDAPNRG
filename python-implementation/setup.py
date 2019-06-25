@@ -16,5 +16,6 @@ setup(
         'Cython',
         'scikit-tda',
         'matplotlib',
+        'plotly'
     ]
 )
