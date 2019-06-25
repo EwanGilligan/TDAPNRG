@@ -7,6 +7,7 @@ Dependancies:
   * [scitkit-tda](https://scikit-tda.org/)
   * matplotlib.
   * scikit-learn
+  * plotly
 
 Cython should be the only one required before installation. Due to setuptools not specifying order of installation, you may need to install Cython before setup, which can be done by running
 
