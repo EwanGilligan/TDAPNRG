@@ -1,6 +1,8 @@
 from src.pnrg.RNG import RNG
 import numpy as np
 
+# try find a better fix
+np.seterr(over='ignore')
 
 class LCG(RNG):
 

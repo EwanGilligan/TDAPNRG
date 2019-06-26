@@ -151,7 +151,6 @@ class HypercubeTest:
         :return: p value of the chi^2 test of comparing the two distributions.
         """
         observed_distribution = self.generate_distribution(rng)
-        print(observed_distribution)
         return stats.chisquare(f_obs=observed_distribution, f_exp=reference_distribution)[1]
 
     def perform_test(self, rng: RNG) -> int:

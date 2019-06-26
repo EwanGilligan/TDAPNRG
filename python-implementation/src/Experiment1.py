@@ -8,32 +8,25 @@ import matplotlib
 from src.randology import *
 from src.pnrg import *
 
-rng = FromBinaryFile("../random-org-seq/TrueRandom1", 12000)
-rng2 = FromBinaryFile("../random-org-seq/TrueRandom2", 12000)
+rng = FromBinaryFile("../../random-org-seq/TrueRandom1", 12000)
+rng2 = FromBinaryFile("../../random-org-seq/TrueRandom2", 12000)
+fileRand = FromBinaryFile("../../pseudo-random-sequences/outGlibc48", 12000)
 python_rand = pythonRandom("Python Random")
 gameRand = GameRand(0xDEADBEEF)
-randu = Randu(int(time.time()))
-test = HypercubeTest(runs=1, number_of_points=12000, dimension=3, homology_dimension=0, filtration_size=20,
-                     reference_rng=rng, scale=1.0, max_filtration_value=0.1)
-# test.visualise_failure(randu)
-# start = time.time()
-# print(test.perform_test(randu))
-# end = time.time()
-# print("Time elapsed:", end - start)
-x = test.generate_points(randu)
-result = ripser(x, thresh=0.2, do_cocycles=True)
-cocycles = result['cocycles']
-diagrams = result['dgms']
-dgm1 = diagrams[1]
-idx = np.argmax(dgm1[:, 1] - dgm1[:, 0])
-cocycle_points_array = []
-last300 = cocycles[1][-300:]
-for cocycle in cocycles[1]:
-    #print(cocycle)
-    indices = np.unique(np.concatenate((np.take(cocycle, 0, axis=1), np.take(cocycle, 1, axis=1))))
-    cocycle_points = np.array([x[i] for i in indices])
-    cocycle_points_array.append(cocycle_points)
-plot_3d(cocycle_points_array)
-plt.show()
+randu = Randu(1)
+lsfr = LFSR(0xDEADBEEF)
+glibc48 = Glibc(0x2197B942509FF4DB)
+test = HypercubeTest(runs=10, number_of_points=12000, dimension=3, homology_dimension=0, filtration_size=20,
+                     reference_rng=rng2, scale=0.15)
+start = time.time()
+print(test.perform_test(glibc48))
+end = time.time()
+print("Time elapsed:", end - start)
+# x = generate_points(glibc48, 12000, 3)
+# #plot_3d_interactive([x], "Glibc")
+# # # x2 = generate_points(randu, 12000, 3, 1)
+# plot_connected_components(x, glibc48.get_name(), "../../visualisations/", 20)
+# plot_connected_components(x2, randu.get_name(), "../../visualisations/", 20)
+
 
 # test.test_directory("../pseudo-random-sequences")
