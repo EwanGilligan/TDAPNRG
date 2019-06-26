@@ -9,7 +9,7 @@ from scipy import sparse
 from sklearn.metrics.pairwise import pairwise_distances
 
 from src.pnrg import RNG, FromBinaryFile
-from src.randology import visualise_point_cloud
+from src.randology import plot_connected_components
 
 
 def make_sparse_dm(points: np.array, thresh):
@@ -22,7 +22,7 @@ def make_sparse_dm(points: np.array, thresh):
     return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
 
-def generate_points(rng: RNG, number_of_points, dimension, scale=1) -> np.array:
+def generate_points(rng: RNG, number_of_points, dimension, scale=1.0) -> np.array:
     """
     Generates a set of vectors in [0,1]^dimension hypercube.
 
@@ -187,7 +187,7 @@ class HypercubeTest:
         else:
             return np.linspace(0, self.scale * 1 / self.dimension, self.filtration_size)
 
-    def visualise_failure(self, rng: RNG):
+    def visualise_failure(self, rng: RNG, filepath: str):
         point_cloud = generate_points(rng, self.number_of_points, self.dimension, self.scale)
         reference_point_cloud = generate_points(self.reference_rng, self.number_of_points, self.dimension, self.scale)
         diagram = self.generate_diagrams(pairwise_distances(reference_point_cloud))[self.homology_dimension]
@@ -197,9 +197,9 @@ class HypercubeTest:
             if not np.isinf(point[1]):
                 epsilon = point[1]
                 break
-        filename = '../visualisations/{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points,
-                                                                epsilon)
-        visualise_point_cloud(point_cloud, epsilon, 10, filename)
+        filename = '{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points,
+                                              epsilon)
+        plot_connected_components(point_cloud, epsilon, filename, filepath, 20)
 
     def test_directory(self, directory_path):
         """

@@ -146,17 +146,16 @@ def plot_complexes(x, edges_group, title, filepath):
     }, filename=filepath + title + ".html")
 
 
-def plot_connected_components(x, title, filepath, n_largest=10, scale=1):
+def plot_connected_components(x, threshhold, title, filepath, n_largest=10):
     """
     Plot the n largest cocycles from the point cloud x.
 
-    :param scale:
+    :param threshhold: Threshhold for ripser to use to calculate the cocyles.
     :param x: point cloud to plot
     :param title: The title of the plot
     :param filepath: filepath to where to store the plot
     :param n_largest: How many cocycles should be plotted. The n largest of the cocycles will be included in the plot.
     """
-    threshhold = scale * 2 / x.shape[0] ** (1 / x.shape[1])
     print(threshhold)
     result = ripser(x, thresh=threshhold, do_cocycles=True)
     cocycles = result['cocycles']
