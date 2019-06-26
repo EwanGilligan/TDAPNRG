@@ -146,24 +146,25 @@ def plot_complexes(x, edges_group, title, filepath):
     }, filename=filepath + title + ".html")
 
 
-def plot_connected_components(x, title, filepath,  n_largest=10):
+def plot_connected_components(x, title, filepath, n_largest=10, scale=1):
     """
     Plot the n largest cocycles from the point cloud x.
 
+    :param scale:
     :param x: point cloud to plot
     :param title: The title of the plot
     :param filepath: filepath to where to store the plot
     :param n_largest: How many cocycles should be plotted. The n largest of the cocycles will be included in the plot.
     """
-    threshhold = 2 / x.shape[0] ** (1 / x.shape[1])
+    threshhold = scale * 2 / x.shape[0] ** (1 / x.shape[1])
     print(threshhold)
     result = ripser(x, thresh=threshhold, do_cocycles=True)
     cocycles = result['cocycles']
     diagrams = result['dgms']
     dgm1 = diagrams[1]
     large_cocyles = sorted(cocycles[1], key=lambda c: len(c), reverse=True)[:n_largest]
-    #large_cocyles = list(filter(lambda c: len(c) > x.shape[0] / 10, cocycles[1]))
-    #idx = np.argmax([len(x) for x in cocycles[1]])
+    # large_cocyles = list(filter(lambda c: len(c) > x.shape[0] / 10, cocycles[1]))
+    # idx = np.argmax([len(x) for x in cocycles[1]])
     # plot_cocycle(x, cocycles[1][idx], title)
     # large_cocyles = [cocycles[1][idx]]
     # idx = np.argmax(dgm1[:, 1] - dgm1[:, 0])

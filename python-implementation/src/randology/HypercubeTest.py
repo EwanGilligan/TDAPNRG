@@ -22,7 +22,7 @@ def make_sparse_dm(points: np.array, thresh):
     return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
 
-def generate_points(rng: RNG, number_of_points, dimension, scale) -> np.array:
+def generate_points(rng: RNG, number_of_points, dimension, scale=1) -> np.array:
     """
     Generates a set of vectors in [0,1]^dimension hypercube.
 
