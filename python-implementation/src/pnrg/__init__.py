@@ -6,3 +6,5 @@ from .GameRand import GameRand
 from .pythonRandom import pythonRandom
 from .LFSR import LFSR
 from .Glibc import Glibc
+from .EIG import EIG
+from .ICG import ICG
