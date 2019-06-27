@@ -1,4 +1,4 @@
-from src.pnrg import LCG
+from src.pnrg.LCGs import LCG
 
 
 class Glibc(LCG):

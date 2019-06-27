@@ -4,6 +4,7 @@ import numpy as np
 # try find a better fix
 np.seterr(over='ignore')
 
+
 class LCG(RNG):
 
     def __init__(self, name: str, multiplier: np.int64, increment: np.int64, modulus: np.int64, seed: np.int64) -> None:

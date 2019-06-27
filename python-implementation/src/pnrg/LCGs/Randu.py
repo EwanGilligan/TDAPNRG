@@ -1,4 +1,4 @@
-from src.pnrg.LCG import LCG
+from src.pnrg.LCGs.LCG import LCG
 
 
 class Randu(LCG):
