@@ -4,8 +4,10 @@ import numpy as np
 
 
 class FromBinaryFile(RNG):
-    def __init__(self, filepath: str, size: int):
-        RNG.__init__(self, "File-" + filepath.replace('/', '-'))
+    def __init__(self, filepath: str, size: int, name = None):
+        if name is None:
+            name = "File-" + filepath.replace('/', '-')
+        RNG.__init__(self, name)
         try:
             self.f = open(filepath, "rb", size * 64)
         except IOError:
