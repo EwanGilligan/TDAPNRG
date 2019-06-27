@@ -10,6 +10,5 @@ class EIG(ICG):
         super().__init__(name=name, multiplier=multiplier, increment=increment, modulus=modulus, seed=seed)
 
     def next_int(self) -> np.int64:
-        print("called")
         self.seed = (self.seed + 1) % self.modulus
         return super().inverse_mod((self.seed * self.multiplier + self.increment) % self.modulus, self.modulus)

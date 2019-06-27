@@ -1,4 +1,4 @@
-from pnrg import LCG
+from pnrg.LCGs import LCG
 
 
 class Minstd(LCG):
