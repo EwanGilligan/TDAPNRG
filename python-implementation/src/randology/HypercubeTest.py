@@ -30,12 +30,12 @@ class HypercubeTest(HomologyTest):
         :param filtration_size: Size of the filtration range to be used.
         :param max_filtration_value: The maximum value in the filtration, also the threshold value of the complex.
         """
-        self.number_of_points = number_of_points
         self.dimension = dimension
         # self.filtration_range = np.array([0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.070, 0.075, 0.08, 0.085, 0.09, 0.095])
         # self.filtration_size = len(self.filtration_range)
         self.scale = scale
-        super().__init__(reference_rng, runs, homology_dimension, filtration_size, max_filtration_value)
+        super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
+                         max_filtration_value)
 
     def generate_distribution(self, rng: RNG):
         """

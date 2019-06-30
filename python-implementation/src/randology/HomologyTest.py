@@ -12,8 +12,9 @@ from pnrg import RNG, FromBinaryFile
 
 
 class HomologyTest(ABC):
-    def __init__(self, reference_rng, runs, homology_dimension, filtration_size, filtration_value):
+    def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value):
         self.reference_rng = reference_rng
+        self.number_of_points = number_of_points
         self.runs = runs
         self.homology_dimension = homology_dimension
         self.filtration_size = filtration_size
