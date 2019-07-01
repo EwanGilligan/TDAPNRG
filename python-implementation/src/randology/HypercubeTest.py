@@ -135,4 +135,28 @@ class HypercubeTest(HomologyTest):
         # Then creates the array using said function.
         return np.fromfunction(np.vectorize(generate_point), (number_of_points, dimension))
 
-        # return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
+    @staticmethod
+    def generate_3D_points_delayed(rng: RNG, number_of_points, scale=1.0):
+        # function to generate point in scale.
+        def generate_point():
+            value = rng.next_float()
+            while value > scale:
+                value = rng.next_float()
+            return value
+
+        points = []
+        for _ in range(number_of_points):
+            x = generate_point()  # s[n-3]
+            y = generate_point()  # s[n -2]
+            z = generate_point()  # s[n -1]
+
+            x = y - x  # s{n-2] - s[n-3]
+            y = z - y  # s[n-1] - s[n-2]
+            z = generate_point() - z  # s[n] - s[n-1]
+            # normalise points to unit hypercube
+            point = np.array([x, y, z])
+            point = 0.5 * (point + scale)
+            points.append(point)
+        return np.array(points)
+
+# return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
