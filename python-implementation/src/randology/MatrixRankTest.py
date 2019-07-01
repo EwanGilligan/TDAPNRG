@@ -3,6 +3,7 @@ from .HomologyTest import HomologyTest
 from pyfinite import genericmatrix, ffield
 from typing import Tuple
 import numpy as np
+from sklearn.metrics import pairwise_distances
 
 
 class MatrixRankTest(HomologyTest):
@@ -10,18 +11,38 @@ class MatrixRankTest(HomologyTest):
     def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=1, filtration_size=5,
                  filtration_value=None):
         assert matrix_size <= 64, "Matrix size must be a positive value less than or equal to 64."
-        super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value)
+        super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size, matrix_size)
         self.matrix_size = matrix_size
 
-    def generate_distribution(self, reference_rng):
-        pass
+    def generate_distribution(self, rng):
+        points = MatrixRankTest.generate_points(rng, self.number_of_points, self.matrix_size)
+        dm = self.get_distance_matrix(points)
+        diagrams = self.generate_diagrams(dm)
+        return self.generate_homology(diagrams)[self.homology_dimension]
 
-    def create_filtration_range(self, filtration_value):
-        pass
+    def create_filtration_range(self, matrix_size):
+        return [0, matrix_size - 3, matrix_size - 2, matrix_size - 1, matrix_size,
+                matrix_size + 1]
+
+    def get_distance_matrix(self,points):
+        distances = np.ndarray((self.number_of_points, self.number_of_points))
+        for i in range(self.number_of_points):
+            for j in range(i + 1):
+                distances[i][j] = distances[j][i] = MatrixRankTest.rank_distance(points[i], points[j])
+        return distances
+
 
     @staticmethod
-    def generate_points(rng: RNG):
-        pass
+    def rank_distance(m1, m2):
+        t = m1 + m2
+        return MatrixRankTest.rank(t)
+
+    @staticmethod
+    def generate_points(rng: RNG, number_of_points, matrix_size):
+        matrices = []
+        for _ in range(number_of_points):
+            matrices.append(MatrixRankTest.create_random_matrix(rng, matrix_size))
+        return np.array(matrices)
 
     @staticmethod
     def create_random_matrix(rng: RNG, matrix_size):
