@@ -74,8 +74,14 @@ test3 = HypercubeTest(runs=10, number_of_points=12000, dimension=3, homology_dim
                       reference_rng=rng, scale=0.15)
 test4 = HypercubeTest(runs=5, number_of_points=12000, dimension=3, homology_dimension=0, filtration_size=40,
                       reference_rng=rng, scale=0.075)
-print("Scale:1.0")
-test.test_generator_list(generators)
+
+for generator in generators:
+    test.visualise_failure(generator, "../visualisations/")
+    test2.visualise_failure(generator, "../visualisations/")
+    test3.visualise_failure(generator, "../visualisations/")
+    test4.visualise_failure(generator, "../visualisations/")
+# print("Scale:1.0")
+# test.test_generator_list(generators)
 # print("Scale:0.45")
 # test2.test_generator_list(generators)
 # print("Scale:0.15")

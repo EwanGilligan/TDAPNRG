@@ -86,7 +86,7 @@ class HypercubeTest(HomologyTest):
                 epsilon = point[1]
                 break
         filename = '{}-{}D-{}-{}.html'.format(rng.get_name(), self.dimension, self.number_of_points,
-                                              epsilon)
+                                              self.scale)
         plot_connected_components(point_cloud, epsilon, filename, filepath, 20)
 
     @staticmethod
