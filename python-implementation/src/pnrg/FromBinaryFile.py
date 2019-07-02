@@ -27,7 +27,8 @@ class FromBinaryFile(RNG):
         byte = self.f.read(8)
         # checks that the end of the file hasn't been reached.
         if not byte:
-            raise EOFError
+            # loops back to the beginning
+            self.f.seek(0)
         return np.int64(int.from_bytes(byte, byteorder="little", signed=True))
 
     def next_float(self):
