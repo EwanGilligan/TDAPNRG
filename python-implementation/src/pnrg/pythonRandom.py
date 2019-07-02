@@ -12,7 +12,7 @@ class pythonRandom(RNG):
             random.seed(seed)
 
     def next_int(self) -> np.int64:
-        return np.int64(random.randint(0, 2 ** 63 - 1))
+        return np.int64(random.randint(np.iinfo(np.int64).min, np.iinfo(np.int64).max))
 
     def next_float(self) -> np.float64:
         return np.float64(random.random())
