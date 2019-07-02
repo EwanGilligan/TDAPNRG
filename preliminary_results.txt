@@ -1,0 +1,108 @@
+Scale:1.0
+Randu:0/10
+Time elapsed: 106.79895305633545
+Randu:0/10
+Time elapsed: 105.96323680877686
+Minstd:10/10
+Time elapsed: 107.06466841697693
+Minstd:9/10
+Time elapsed: 105.6599292755127
+Glibc48:7/10
+Time elapsed: 105.7755343914032
+Glibc48:10/10
+Time elapsed: 105.66770648956299
+PythonRandom:10/10
+Time elapsed: 105.65038561820984
+PythonRandom:7/10
+Time elapsed: 105.43864893913269
+EICG1:10/10
+Time elapsed: 119.47228288650513
+EICG1:10/10
+Time elapsed: 119.42170929908752
+LFSR2547:8/10
+Time elapsed: 236.5818259716034
+LFSR2547:10/10
+Time elapsed: 236.07869505882263
+File-..-..-random-org-seq-TrueRandom2:10/10
+Time elapsed: 105.89563035964966
+File-..-..-random-org-seq-TrueRandom3:10/10
+Time elapsed: 105.96169447898865
+Quasirandom:0/10
+Time elapsed: 105.04986691474915
+GameRand:10/10
+Time elapsed: 105.5387818813324
+GameRand:10/10
+Time elapsed: 105.98313975334167
+Done
+Scale:0.45
+Randu:0/10
+Time elapsed: 106.18215227127075
+Randu:0/10
+Time elapsed: 106.26784753799438
+Minstd:8/10
+Time elapsed: 106.30597114562988
+Minstd:10/10
+Time elapsed: 106.1098403930664
+Glibc48:10/10
+Time elapsed: 107.15315890312195
+Glibc48:9/10
+Time elapsed: 106.50610423088074
+PythonRandom:10/10
+Time elapsed: 105.70059704780579
+PythonRandom:9/10
+Time elapsed: 105.85927724838257
+EICG1:9/10
+Time elapsed: 136.17754769325256
+EICG1:6/10
+Time elapsed: 135.91683101654053
+LFSR2547:9/10
+Time elapsed: 406.5897960662842
+LFSR2547:8/10
+Time elapsed: 417.61920976638794
+File-..-..-random-org-seq-TrueRandom2:9/10
+Time elapsed: 106.19881391525269
+File-..-..-random-org-seq-TrueRandom3:10/10
+Time elapsed: 106.22445583343506
+Quasirandom:0/10
+Time elapsed: 106.3502881526947
+GameRand:10/10
+Time elapsed: 106.02755737304688
+GameRand:3/10
+Time elapsed: 106.12101936340332
+Done
+Scale:0.15
+Randu:9/10
+Time elapsed: 107.36296010017395
+Randu:9/10
+Time elapsed: 107.2878623008728
+Minstd:10/10
+Time elapsed: 107.43484568595886
+Minstd:8/10
+Time elapsed: 107.59671831130981
+Glibc48:10/10
+Time elapsed: 108.09462904930115
+Glibc48:9/10
+Time elapsed: 107.99590682983398
+PythonRandom:10/10
+Time elapsed: 106.39627289772034
+PythonRandom:10/10
+Time elapsed: 106.42801761627197
+EICG1:2/10
+Time elapsed: 192.03533220291138
+EICG1:7/10
+Time elapsed: 191.8233666419983
+LFSR2547:6/10
+Time elapsed: 979.6041932106018
+LFSR2547:9/10
+Time elapsed: 1005.5467784404755
+File-..-..-random-org-seq-TrueRandom2:10/10
+Time elapsed: 109.2211127281189
+File-..-..-random-org-seq-TrueRandom3:10/10
+Time elapsed: 109.33367657661438
+Quasirandom:0/10
+Time elapsed: 108.22449541091919
+GameRand:10/10
+Time elapsed: 109.2962920665741
+GameRand:10/10
+Time elapsed: 108.91627597808838
+Done

@@ -1,4 +1,5 @@
 from setuptools import setup
+from Cython.Build import cythonize
 
 setup(
     name='randology',
@@ -16,6 +17,8 @@ setup(
         'Cython',
         'scikit-tda',
         'matplotlib',
-        'plotly'
-    ]
+        'plotly',
+        'pyfinite'
+    ],
+    ext_modules= cythonize("src/randology/GF2Matrix.pyx")
 )
