@@ -1,11 +1,11 @@
-import os
-import time
+
 
 import numpy as np
-from scipy import stats
-from ripser import Rips
-from typing import List
+# from scipy import stats
+# from ripser import Rips
+# from typing import List
 from scipy import sparse
+from scipy import spatial
 from sklearn.metrics.pairwise import pairwise_distances
 
 from src.pnrg import RNG, FromBinaryFile
@@ -92,7 +92,7 @@ class HypercubeTest(HomologyTest):
     @staticmethod
     def make_sparse_dm(points: np.array, thresh):
         n = points.shape[0]
-        distance_matrix = pairwise_distances(points)
+        distance_matrix = spatial.distance.squareform(spatial.distance.pdist(points)) #pairwise_distances(points)
         [i, j] = np.meshgrid(np.arange(n), np.arange(n))
         i = i[distance_matrix <= thresh]
         j = j[distance_matrix <= thresh]
