@@ -17,7 +17,7 @@ class HypercubeTest(HomologyTest):
 
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  scale: float = 1.0, homology_dimension: int = 0, filtration_size: int = 20,
-                 max_filtration_value: float = None):
+                 max_filtration_value: float = None, recalculate_distribution=False):
         """
         Initialises a new HypercubeTest object.
 
@@ -35,7 +35,7 @@ class HypercubeTest(HomologyTest):
         # self.filtration_size = len(self.filtration_range)
         self.scale = scale
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
-                         max_filtration_value)
+                         max_filtration_value, recalculate_distribution)
 
     def generate_distribution(self, rng: RNG):
         """

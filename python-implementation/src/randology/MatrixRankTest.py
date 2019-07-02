@@ -9,9 +9,9 @@ from sklearn.metrics import pairwise_distances
 class MatrixRankTest(HomologyTest):
 
     def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=1, filtration_size=5,
-                 filtration_value=None):
+                 filtration_value=None, recalculate_distribution=False):
         assert matrix_size <= 64, "Matrix size must be a positive value less than or equal to 64."
-        super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size, matrix_size)
+        super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size, matrix_size, recalculate_distribution)
         self.matrix_size = matrix_size
 
     def generate_distribution(self, rng):

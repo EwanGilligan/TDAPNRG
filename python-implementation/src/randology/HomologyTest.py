@@ -12,7 +12,7 @@ from pnrg import RNG, FromBinaryFile
 
 
 class HomologyTest(ABC):
-    def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value):
+    def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value, recalculate_distribution):
         self.reference_rng = reference_rng
         self.number_of_points = number_of_points
         self.runs = runs
@@ -20,6 +20,9 @@ class HomologyTest(ABC):
         self.filtration_size = filtration_size
         self.filtration_range = self.create_filtration_range(filtration_value)
         self.filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
+        self.reference_distribution = None
+        self.recalculate_distribution = recalculate_distribution
+
 
     def generate_diagrams(self, distance_matrix) -> List[np.ndarray]:
         """
@@ -62,7 +65,13 @@ class HomologyTest(ABC):
         :return: Number of times the rng passes the test.
         """
         passes = 0
-        reference_distribution = self.generate_distribution(self.reference_rng)
+        reference_distribution = None
+        if self.recalculate_distribution:
+            reference_distribution = self.generate_distribution(self.reference_rng)
+        elif self.reference_distribution is None:
+            self.reference_distribution = self.generate_distribution(self.reference_rng)
+        else:
+            reference_distribution = self.reference_distribution
         for i in range(self.runs):
             # if the p value is greater than 0.01
             if self.single_run(rng, reference_distribution) > 0.01:
