@@ -6,7 +6,10 @@ import numpy as np
 import matplotlib
 
 from src.randology import *
-from src.pnrg import *
+from src.pnrg.LCGs import *
+from src.pnrg.CSG import *
+from src.pnrg.LFSR import *
+from src.pnrg import FromBinaryFile, pythonRandom, Quasirandom
 
 seed1 = 0xDEADBEEF
 seed2 = 0xD978757273
