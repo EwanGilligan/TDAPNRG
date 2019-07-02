@@ -4,7 +4,7 @@ import numpy as np
 
 
 class FromBinaryFile(RNG):
-    def __init__(self, filepath: str, size: int, name = None):
+    def __init__(self, filepath: str, size: int, name=None):
         if name is None:
             name = "File-" + filepath.replace('/', '-')
         RNG.__init__(self, name)
@@ -29,10 +29,11 @@ class FromBinaryFile(RNG):
         if not byte:
             # loops back to the beginning
             self.f.seek(0)
+            return self.next_int()
         return np.int64(int.from_bytes(byte, byteorder="little", signed=True))
 
     def next_float(self):
-        return np.float64(abs(self.next_int() / (2**63 - 1)))
+        return np.float64(abs(self.next_int() / np.iinfo(np.int64).max))
 
     def next_64_bits(self):
         return np.int64(self.next_int())
