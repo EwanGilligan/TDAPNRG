@@ -5,39 +5,41 @@ import time
 
 import numpy as np
 from scipy import stats
-from ripser import Rips
+from ripser import Rips, ripser
 from typing import List
 
 from pnrg import RNG, FromBinaryFile
 
 
 class HomologyTest(ABC):
-    def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value, recalculate_distribution):
+    def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value,
+                 recalculate_distribution):
         self.reference_rng = reference_rng
         self.number_of_points = number_of_points
         self.runs = runs
         self.homology_dimension = homology_dimension
         self.filtration_size = filtration_size
-        self.filtration_range = self.create_filtration_range(filtration_value)
-        self.filtration = Rips(maxdim=self.homology_dimension, thresh=self.filtration_range[-1], verbose=True)
+        self.filtration_range = self.create_filtration_range()
+        #self.filtration = Rips(maxdim=self.homology_dimension, verbose=True, thresh=self.filtration_range[-1])
         self.reference_distribution = None
         self.recalculate_distribution = recalculate_distribution
 
-
-    def generate_diagrams(self, distance_matrix) -> List[np.ndarray]:
+    def generate_diagrams(self, distance_matrix, threshold) -> List[np.ndarray]:
         """
         Generates the persistence diagrams from the given distance matrix.
 
+        :param threshold:
         :param distance_matrix: distance matrix of the point cloud.
         :rtype: dict
         :return: A list of persistence diagrams,  one for each dimension less than maximum homology dimension.
         Each diagram is an ndarray of size (n_pairs, 2) with the first column representing the birth time and
         the second column representing the death time of each pair.
         """
-        diagrams = self.filtration.fit_transform(distance_matrix, distance_matrix=True)
+        diagrams = ripser(X=distance_matrix, distance_matrix=True, maxdim=self.homology_dimension, thresh=threshold)["dgms"]
+        #diagrams = self.filtration.fit_transform(distance_matrix, distance_matrix=True)["dgms"]
         return diagrams
 
-    def generate_homology(self, diagrams):
+    def generate_homology(self, diagrams, filtration_range):
         """
         Generate tbe betti numbers associated with the diagrams.
 
@@ -46,11 +48,11 @@ class HomologyTest(ABC):
         :return: dictionary containing entries for each dimension less than homology dimension, with each entry being a
         list of the betti numbers for each value in the filtration range.
         """
-        homology = {dimension: np.zeros(self.filtration_size) for dimension in range(self.homology_dimension + 1)}
+        homology = {dimension: np.zeros(len(filtration_range)) for dimension in range(self.homology_dimension + 1)}
         for dimension, diagram, in enumerate(diagrams):
             if dimension <= self.homology_dimension and len(diagram) > 0:
                 homology[dimension] = np.array(
-                    [np.array(((self.filtration_range >= point[0]) & (self.filtration_range <= point[1]))).astype(int)
+                    [np.array(((filtration_range >= point[0]) & (filtration_range <= point[1]))).astype(int)
                      for point
                      in diagram]).sum(axis=0).tolist()
         return homology
@@ -67,9 +69,9 @@ class HomologyTest(ABC):
         passes = 0
         reference_distribution = None
         if self.recalculate_distribution:
-            reference_distribution = self.generate_distribution(self.reference_rng)
+            reference_distribution = self.generate_reference_distribution(self.reference_rng)
         elif self.reference_distribution is None:
-            self.reference_distribution = self.generate_distribution(self.reference_rng)
+            reference_distribution = self.reference_distribution = self.generate_reference_distribution(self.reference_rng)
         else:
             reference_distribution = self.reference_distribution
         for i in range(self.runs):
@@ -87,20 +89,24 @@ class HomologyTest(ABC):
         :param reference_distribution: Distribution of betti numbers to compare against.
         :return: p value of the chi^2 test of comparing the two distributions.
         """
-        observed_distribution = self.generate_distribution(rng)
+        observed_distribution = self.generate_distribution(rng, self.filtration_range)
         return stats.chisquare(f_obs=observed_distribution, f_exp=reference_distribution)[1]
 
     @abstractmethod
-    def generate_distribution(self, reference_rng):
+    def generate_distribution(self, rng, filtration_range):
         pass
 
     @abstractmethod
-    def create_filtration_range(self, filtration_value):
+    def generate_reference_distribution(self, reference_rng):
+        pass
+
+    @abstractmethod
+    def create_filtration_range(self):
         pass
 
     @staticmethod
     @abstractmethod
-    def generate_points(rng: RNG):
+    def generate_points(rng: RNG, number_of_points, dimension):
         pass
 
     def test_directory(self, directory_path):
