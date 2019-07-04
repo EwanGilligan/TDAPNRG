@@ -104,9 +104,10 @@ class HypercubeTest(HomologyTest):
         n = points.shape[0]
         distance_matrix = spatial.distance.squareform(spatial.distance.pdist(points))  # pairwise_distances(points)
         [i, j] = np.meshgrid(np.arange(n), np.arange(n))
-        i = i[distance_matrix <= thresh]
-        j = j[distance_matrix <= thresh]
-        v = distance_matrix[distance_matrix <= thresh]
+        points_under_thresh = distance_matrix <= thresh
+        i = i[points_under_thresh]
+        j = j[points_under_thresh]
+        v = distance_matrix[points_under_thresh]
         return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
     @staticmethod
