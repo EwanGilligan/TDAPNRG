@@ -1,8 +1,6 @@
-
-
 import numpy as np
 # from scipy import stats
-# from ripser import Rips
+from ripser import ripser
 # from typing import List
 from scipy import sparse
 from scipy import spatial
@@ -15,9 +13,14 @@ from .HomologyTest import HomologyTest
 
 class HypercubeTest(HomologyTest):
 
+    def generate_reference_distribution(self, reference_rng):
+        # generate points at a scale of 1.0
+        filtration_range = self.create_filtration_range(scale=1)
+        return self.generate_distribution(reference_rng, filtration_range=filtration_range, scale=1)
+
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  scale: float = 1.0, homology_dimension: int = 0, filtration_size: int = 20,
-                 max_filtration_value: float = None):
+                 max_filtration_value: float = None, recalculate_distribution=False):
         """
         Initialises a new HypercubeTest object.
 
@@ -35,44 +38,51 @@ class HypercubeTest(HomologyTest):
         # self.filtration_size = len(self.filtration_range)
         self.scale = scale
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
-                         max_filtration_value)
+                         max_filtration_value, recalculate_distribution)
 
-    def generate_distribution(self, rng: RNG):
+    def generate_distribution(self, rng: RNG, filtration_range, scale=None):
         """
         Takes the random number pnrg, and then generates the distribution of betti numbers for that RNG.RNG.
 
         Points are generated in the hypercube using the random number pnrg. Then the persistence diagram is
         calculated, and the betti numbers are then calculated from the persistence diagram.
 
+        :param scale:
+        :param filtration_range:
         :rtype: np.array
         :param rng: random number pnrg to create a distribution for.
         :return: Array containing the betti numbers associated with each filtration value.
         """
-        points = self.generate_points(rng, self.number_of_points, self.dimension, self.scale)
+        if scale is None:
+            scale = self.scale
+        points = self.generate_points(rng, self.number_of_points, self.dimension, scale)
         # distance_matrix = pairwise_distances(points)
-        sparse_distance_matrix = self.make_sparse_dm(points, self.filtration_range[-1])
+        sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
         # An attempt to reduce memory usage, might not work
         del points
-        diagrams = self.generate_diagrams(sparse_distance_matrix)
-        homology = self.generate_homology(diagrams)
+        diagrams = self.generate_diagrams(sparse_distance_matrix, threshold=filtration_range[-1])
+        homology = self.generate_homology(diagrams, filtration_range)
         return homology[self.homology_dimension]
 
-    def create_filtration_range(self, max_filtration_value=None) -> np.array:
+    def create_filtration_range(self, scale=None, max_filtration_value=None) -> np.array:
         """
         Creates an evenly spaced interval to use as a range of filtration values.
 
+        :param scale:
         :return:
         :param max_filtration_value: optional specified maximum value to use in the range.
         :rtype: np.array
         :return: array containing the filtration range.
         """
+        if scale is None:
+            scale = self.scale
         if max_filtration_value is not None:
             return np.linspace(0, max_filtration_value, self.filtration_size)
         if self.homology_dimension == 0:
-            max_value = self.scale * (2 / self.number_of_points ** (1.0 / self.dimension))
+            max_value = scale * (2 / self.number_of_points ** (1.0 / self.dimension))
             return np.linspace(0, max_value, self.filtration_size)
         else:
-            return np.linspace(0, self.scale * 1 / self.dimension, self.filtration_size)
+            return np.linspace(0, scale * 1 / self.dimension, self.filtration_size)
 
     def visualise_failure(self, rng: RNG, filepath: str):
         point_cloud = self.generate_points(rng, self.number_of_points, self.dimension, self.scale)
@@ -86,17 +96,18 @@ class HypercubeTest(HomologyTest):
                 epsilon = point[1]
                 break
         filename = '{}-{}D-{}-{}'.format(rng.get_name(), self.dimension, self.number_of_points,
-                                              self.scale)
+                                         self.scale)
         plot_connected_components(point_cloud, epsilon, filename, filepath, 20)
 
     @staticmethod
     def make_sparse_dm(points: np.array, thresh):
         n = points.shape[0]
-        distance_matrix = spatial.distance.squareform(spatial.distance.pdist(points)) #pairwise_distances(points)
+        distance_matrix = spatial.distance.squareform(spatial.distance.pdist(points))  # pairwise_distances(points)
         [i, j] = np.meshgrid(np.arange(n), np.arange(n))
-        i = i[distance_matrix <= thresh]
-        j = j[distance_matrix <= thresh]
-        v = distance_matrix[distance_matrix <= thresh]
+        points_under_thresh = distance_matrix <= thresh
+        i = i[points_under_thresh]
+        j = j[points_under_thresh]
+        v = distance_matrix[points_under_thresh]
         return sparse.coo_matrix((v, (i, j)), shape=(n, n)).tocsr()
 
     @staticmethod

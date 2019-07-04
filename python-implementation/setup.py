@@ -20,5 +20,4 @@ setup(
         'plotly',
         'pyfinite'
     ],
-    ext_modules= cythonize("src/randology/GF2Matrix.pyx")
 )
