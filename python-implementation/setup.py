@@ -18,6 +18,7 @@ setup(
         'scikit-tda',
         'matplotlib',
         'plotly',
-        'pyfinite'
+        'pyfinite',
+        'GF2Matrix'
     ],
 )
