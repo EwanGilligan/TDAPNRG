@@ -1,6 +1,5 @@
 from pnrg import RNG
 from .HomologyTest import HomologyTest
-from pyfinite import genericmatrix, ffield
 from typing import Tuple
 import numpy as np
 from sklearn.metrics import pairwise_distances
@@ -13,7 +12,7 @@ class MatrixRankTest(HomologyTest):
         return self.generate_distribution(reference_rng, self.filtration_range)
 
     def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=1, filtration_size=5,
-                 filtration_value=None, recalculate_distribution=False):
+                 recalculate_distribution=False):
         assert matrix_size <= 64, "Matrix size must be a positive value less than or equal to 64."
         self.matrix_size = matrix_size
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size, matrix_size,
@@ -57,5 +56,3 @@ class MatrixRankTest(HomologyTest):
             row_vector = [int(i) for i in np.binary_repr(int(rng.next_64_bits()), 64)]
             m.set_row(i, row_vector[0:matrix_size])
         return m
-
-
