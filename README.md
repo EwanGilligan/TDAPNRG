@@ -8,6 +8,7 @@ Dependancies:
   * matplotlib.
   * scikit-learn
   * plotly
+  * [GF2Matrix](https://github.com/EwanGilligan/GF2Matrix)
 
 Cython should be the only one required before installation. Due to setuptools not specifying order of installation, you may need to install Cython before setup, which can be done by running
 
