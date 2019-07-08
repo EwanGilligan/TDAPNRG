@@ -127,10 +127,13 @@ class HomologyTest(ABC):
 
         :param generators: Iterable object containing a list of RNG type objects to be tested.
         """
+        total_start = time.time()
         for rng in generators:
             start = time.time()
             passes = self.perform_test(rng)
             end = time.time()
             print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
             print("Time elapsed:", end - start)
-        print("Done")
+        total_end = time.time()
+        total_time = total_end - total_start
+        print("Done, total time:", total_time)
