@@ -41,6 +41,14 @@ class MatrixRankTest(HomologyTest):
 
     @staticmethod
     def generate_points(rng: RNG, number_of_points, matrix_size):
+        """
+        Generate an array of m*m matrices with random entries from GF(2), where m is matrix_size.
+
+        :param rng: Random number generator to use when generating the matrix entries.
+        :param number_of_points: Number of matrices to generate.
+        :param matrix_size: Size of matrix to generate. Note matrices are square.
+        :return: Numpy array containing the matrices.
+        """
         matrices = []
         for _ in range(number_of_points):
             matrices.append(MatrixRankTest.create_random_matrix(rng, matrix_size))
@@ -48,6 +56,13 @@ class MatrixRankTest(HomologyTest):
 
     @staticmethod
     def create_random_matrix(rng: RNG, matrix_size):
+        """
+        Create a matrix_size*matrix_size with random entries from GF(2).
+
+        :param rng: Random number generator to use when generating the matrix entries.
+        :param matrix_size: Size of the matrix. Note the matrices are square.
+        :return: GF2Matrix with random entries.
+        """
         m = IntMatrix((matrix_size, matrix_size))
         for i in range(matrix_size):
             # Get a row vector of the 64 bits.

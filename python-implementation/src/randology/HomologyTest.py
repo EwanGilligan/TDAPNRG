@@ -20,7 +20,7 @@ class HomologyTest(ABC):
         self.homology_dimension = homology_dimension
         self.filtration_size = filtration_size
         self.filtration_range = self.create_filtration_range()
-        #self.filtration = Rips(maxdim=self.homology_dimension, verbose=True, thresh=self.filtration_range[-1])
+        # self.filtration = Rips(maxdim=self.homology_dimension, verbose=True, thresh=self.filtration_range[-1])
         self.reference_distribution = None
         self.recalculate_distribution = recalculate_distribution
 
@@ -35,8 +35,9 @@ class HomologyTest(ABC):
         Each diagram is an ndarray of size (n_pairs, 2) with the first column representing the birth time and
         the second column representing the death time of each pair.
         """
-        diagrams = ripser(X=distance_matrix, distance_matrix=True, maxdim=self.homology_dimension, thresh=threshold)["dgms"]
-        #diagrams = self.filtration.fit_transform(distance_matrix, distance_matrix=True)["dgms"]
+        diagrams = ripser(X=distance_matrix, distance_matrix=True, maxdim=self.homology_dimension, thresh=threshold)[
+            "dgms"]
+        # diagrams = self.filtration.fit_transform(distance_matrix, distance_matrix=True)["dgms"]
         return diagrams
 
     def generate_homology(self, diagrams, filtration_range):
@@ -71,7 +72,8 @@ class HomologyTest(ABC):
         if self.recalculate_distribution:
             reference_distribution = self.generate_reference_distribution(self.reference_rng)
         elif self.reference_distribution is None:
-            reference_distribution = self.reference_distribution = self.generate_reference_distribution(self.reference_rng)
+            reference_distribution = self.reference_distribution = self.generate_reference_distribution(
+                self.reference_rng)
         else:
             reference_distribution = self.reference_distribution
         for i in range(self.runs):
@@ -94,19 +96,41 @@ class HomologyTest(ABC):
 
     @abstractmethod
     def generate_distribution(self, rng, filtration_range):
+        """
+        Generate the distribution for the given random number generator.
+
+        :param rng: Random number generator to use when generating the points used.
+        :param filtration_range: The filtration range to calculate the homology over.
+        """
         pass
 
     @abstractmethod
     def generate_reference_distribution(self, reference_rng):
+        """
+        Generate a reference distribution to used as a comparison for the generated distribution.
+
+        :param reference_rng: The reference rng used. This should be data from a true random source.
+        """
         pass
 
     @abstractmethod
     def create_filtration_range(self):
+        """
+        Create a filtration range of varying epsilons to measure the homology over.
+        """
         pass
 
     @staticmethod
     @abstractmethod
     def generate_points(rng: RNG, number_of_points, dimension):
+        """
+        Generate the specified number of points, that will be used in the persistent homology calculation.
+
+        :param rng: Random number generator to use when generating the points.
+        :param number_of_points: Number of points to generate
+        :param dimension: Dimension of the generated points. Note this may be the dimension of the euclidean space, or
+        the dimension of matrices calculated. This is more a generic size parameter for the generated points.
+        """
         pass
 
     def test_directory(self, directory_path):
