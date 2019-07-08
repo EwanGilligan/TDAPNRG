@@ -2,7 +2,6 @@ from pnrg import RNG
 from .HomologyTest import HomologyTest
 import numpy as np
 from GF2Matrix import IntMatrix
-from scipy import sparse
 
 
 class MatrixRankTest(HomologyTest):
@@ -31,7 +30,8 @@ class MatrixRankTest(HomologyTest):
         distances = np.ndarray((self.number_of_points, self.number_of_points))
         for i in range(self.number_of_points):
             for j in range(i + 1):
-                distances[i][j] = distances[j][i] = (points[i] + points[j]).rank()#MatrixRankTest.rank_distance(points[i], points[j])
+                distances[i][j] = distances[j][i] = (
+                            points[i] + points[j]).rank()  # MatrixRankTest.rank_distance(points[i], points[j])
         return distances
 
     @staticmethod
