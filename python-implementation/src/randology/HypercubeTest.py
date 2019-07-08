@@ -20,7 +20,7 @@ class HypercubeTest(HomologyTest):
 
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  scale: float = 1.0, homology_dimension: int = 0, filtration_size: int = 20,
-                 max_filtration_value: float = None, recalculate_distribution=False):
+                 max_filtration_value: float = None, recalculate_distribution=False, delayed_coordinates=False):
         """
         Initialises a new HypercubeTest object.
 
@@ -39,6 +39,9 @@ class HypercubeTest(HomologyTest):
         self.scale = scale
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
                          max_filtration_value, recalculate_distribution)
+        # Delayed coordinates can only be used for 3D. Working on making it more general.
+        assert not delayed_coordinates or (delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
+        self.delayed_coordinates = delayed_coordinates
 
     def generate_distribution(self, rng: RNG, filtration_range, scale=None):
         """
@@ -55,7 +58,10 @@ class HypercubeTest(HomologyTest):
         """
         if scale is None:
             scale = self.scale
-        points = self.generate_points(rng, self.number_of_points, self.dimension, scale)
+        if self.delayed_coordinates:
+            points = self.generate_3D_points_delayed(rng, self.number_of_points, scale)
+        else:
+            points = self.generate_points(rng, self.number_of_points, self.dimension, scale)
         # distance_matrix = pairwise_distances(points)
         sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
         # An attempt to reduce memory usage, might not work
@@ -146,4 +152,27 @@ class HypercubeTest(HomologyTest):
         # Then creates the array using said function.
         return np.fromfunction(np.vectorize(generate_point), (number_of_points, dimension))
 
-        # return np.array([[rng.next_float() for _ in range(self.dimension)] for _ in range(self.number_of_points)])
+    @staticmethod
+    def generate_3D_points_delayed(rng: RNG, number_of_points, scale=1.0):
+        # function to generate point in scale.
+        def generate_point():
+            value = rng.next_float()
+            while value > scale:
+                value = rng.next_float()
+            return value
+
+        points = []
+        for _ in range(number_of_points):
+            x = generate_point()  # s[n-3]
+            y = generate_point()  # s[n -2]
+            z = generate_point()  # s[n -1]
+
+            x = y - x  # s{n-2] - s[n-3]
+            y = z - y  # s[n-1] - s[n-2]
+            z = generate_point() - z  # s[n] - s[n-1]
+            # normalise points to unit hypercube
+            point = np.array([x, y, z])
+            point = 0.5 * (point + scale)
+            points.append(point)
+        return np.array(points)
+
