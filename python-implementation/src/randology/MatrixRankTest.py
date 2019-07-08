@@ -1,9 +1,8 @@
 from pnrg import RNG
 from .HomologyTest import HomologyTest
-from typing import Tuple
 import numpy as np
-from sklearn.metrics import pairwise_distances
 from GF2Matrix import IntMatrix
+from scipy import sparse
 
 
 class MatrixRankTest(HomologyTest):
@@ -11,7 +10,7 @@ class MatrixRankTest(HomologyTest):
     def generate_reference_distribution(self, reference_rng):
         return self.generate_distribution(reference_rng, self.filtration_range)
 
-    def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=1, filtration_size=5,
+    def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=0, filtration_size=5,
                  recalculate_distribution=False):
         assert matrix_size <= 64, "Matrix size must be a positive value less than or equal to 64."
         self.matrix_size = matrix_size
@@ -32,7 +31,7 @@ class MatrixRankTest(HomologyTest):
         distances = np.ndarray((self.number_of_points, self.number_of_points))
         for i in range(self.number_of_points):
             for j in range(i + 1):
-                distances[i][j] = distances[j][i] = MatrixRankTest.rank_distance(points[i], points[j])
+                distances[i][j] = distances[j][i] = (points[i] + points[j]).rank()#MatrixRankTest.rank_distance(points[i], points[j])
         return distances
 
     @staticmethod
