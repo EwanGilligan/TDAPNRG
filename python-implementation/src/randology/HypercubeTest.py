@@ -85,6 +85,7 @@ class HypercubeTest(HomologyTest):
         if max_filtration_value is not None:
             return np.linspace(0, max_filtration_value, self.filtration_size)
         if self.homology_dimension == 0:
+            # for rational behind approximation, see https://arxiv.org/abs/math/0212230
             max_value = scale * (2 / self.number_of_points ** (1.0 / self.dimension))
             return np.linspace(0, max_value, self.filtration_size)
         else:
