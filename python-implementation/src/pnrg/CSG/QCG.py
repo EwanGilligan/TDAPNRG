@@ -5,7 +5,7 @@ from pnrg import RNG
 
 class QCG(RNG):
     def __init__(self, a, b, increment, modulus, seed):
-        super().__init__("QCG-{}-{}-{}-{}".format(a, b, increment, modulus))
+        super().__init__("QCG{}{}{}-{}".format(a, b, increment, modulus))
         self.a = np.int64(a)
         self.b = np.int64(b)
         self.increment = np.int64(increment)
