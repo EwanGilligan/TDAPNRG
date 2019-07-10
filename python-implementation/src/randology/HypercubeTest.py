@@ -5,6 +5,7 @@ from ripser import ripser
 from scipy import sparse
 from scipy import spatial
 from sklearn.metrics.pairwise import pairwise_distances
+import time
 
 from src.pnrg import RNG, FromBinaryFile
 from src.randology import plot_connected_components
@@ -40,7 +41,8 @@ class HypercubeTest(HomologyTest):
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
                          max_filtration_value, recalculate_distribution)
         # Delayed coordinates can only be used for 3D. Working on making it more general.
-        assert not delayed_coordinates or (delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
+        assert not delayed_coordinates or (
+                    delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
         self.delayed_coordinates = delayed_coordinates
 
     def generate_distribution(self, rng: RNG, filtration_range, scale=None):
@@ -177,3 +179,24 @@ class HypercubeTest(HomologyTest):
             points.append(point)
         return np.array(points)
 
+    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0):
+        total_start = time.time()
+        original_scale = self.scale
+        if scale_list is None:
+            scale_list = [1.0]
+        for scale in scale_list:
+            print("Scale:", scale)
+            self.scale = scale
+            for rng in list(generators):
+                start = time.time()
+                passes = self.perform_test(rng)
+                end = time.time()
+                print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
+                print("Time elapsed:", end - start)
+                if passes <= failure_threshold:
+                    generators.remove(rng)
+                    print("Generator removed.")
+        total_end = time.time()
+        total_time = total_end - total_start
+        print("Done, total time:", total_time)
+        self.scale = original_scale

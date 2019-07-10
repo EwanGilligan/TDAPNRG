@@ -18,4 +18,4 @@ class pythonRandom(RNG):
         return np.float64(random.random())
 
     def next_64_bits(self):
-        return np.float64(random.getrandbits(64))
+        return np.uint64(random.getrandbits(64))
