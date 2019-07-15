@@ -42,7 +42,7 @@ class HypercubeTest(HomologyTest):
                          max_filtration_value, recalculate_distribution)
         # Delayed coordinates can only be used for 3D. Working on making it more general.
         assert not delayed_coordinates or (
-                    delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
+                delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
         self.delayed_coordinates = delayed_coordinates
 
     def generate_distribution(self, rng: RNG, filtration_range, scale=None):
@@ -179,24 +179,47 @@ class HypercubeTest(HomologyTest):
             points.append(point)
         return np.array(points)
 
-    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0):
+    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0, verbose=True):
+        """
+        Tests a list of generators, at multiple scales. Generators are removed from the list if the fail the test a specified number of times.
+
+        :param generators: List of random number generators.
+        :param scale_list: List of scales to test at.
+        :param failure_threshold: If a generator fails the test at least this many times, then it will be removed from subsequent testing.
+        :param verbose: Whether or not intermediate test results are printed.
+        :return: dictionary containing each random number generator, and the scale at which they last passed the test.
+        If the generator passes at no scales, then -1 is there.
+        """
+        # -1 indicates a pass at no scales.
+        results_dict = {rng.get_name(): -1 for rng in generators}
         total_start = time.time()
         original_scale = self.scale
         if scale_list is None:
             scale_list = [1.0]
         for scale in scale_list:
-            print("Scale:", scale)
+            if verbose:
+                print("Scale:", scale)
             self.scale = scale
+            self.filtration_range = self.create_filtration_range(scale)
             for rng in list(generators):
                 start = time.time()
                 passes = self.perform_test(rng)
                 end = time.time()
-                print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
-                print("Time elapsed:", end - start)
+                if verbose:
+                    print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
+                    print("Time elapsed:", end - start)
                 if passes <= failure_threshold:
                     generators.remove(rng)
-                    print("Generator removed.")
+                    if verbose:
+                        print("Generator removed.")
+                else:
+                    # record this as the new scale passed at.
+                    results_dict[rng.get_name()] = scale
         total_end = time.time()
         total_time = total_end - total_start
-        print("Done, total time:", total_time)
+        if verbose:
+            print("Done, total time:", total_time)
+        # return to previous values.
         self.scale = original_scale
+        self.filtration_range = self.create_filtration_range(self.scale)
+        return results_dict
