@@ -11,11 +11,12 @@ kelly_colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1'
                 '#8DB600', '#654522', '#E25822', '#2B3D26'][1:]  # skip white
 
 
-def visualise_connected_components_animated_d(point_cloud, threshhold, title, filepath, filtration_range):
+def visualise_connected_components_animated_d(point_cloud, title, filepath, filtration_range):
+    threshhold = filtration_range[-1]
     f = d.fill_rips(point_cloud, 1, threshhold)
     f.sort()
     filtration_iter = iter(filtration_range)
-    #So the 0 value will be grouped.
+    # So the 0 value will be grouped.
     prev_filtration_val = -1
     filtration_val = next(filtration_iter)
     filtrations_grouping = []
@@ -27,13 +28,13 @@ def visualise_connected_components_animated_d(point_cloud, threshhold, title, fi
             filtrations_grouping.append(filtration_list)
             filtration_list = []
         # Don't add 0-simplices, as these will just be all the values in the point cloud.
-        #if s.dimension() != 0:
+        # if s.dimension() != 0:
         filtration_list.append(s)
     filtrations_grouping.append(filtration_list)
-    wip_plot(point_cloud, filtrations_grouping, title, filepath, filtration_range)
+    plot_connected_components(point_cloud, filtrations_grouping, title, filepath, filtration_range)
 
 
-def wip_plot(point_cloud, filtrations, title, filepath, filtration_range):
+def plot_connected_components(point_cloud, filtrations, title, filepath, filtration_range):
     """
 
     :param point_cloud: Numpy array on 3 dimensional points in Euclidean space.
@@ -42,12 +43,14 @@ def wip_plot(point_cloud, filtrations, title, filepath, filtration_range):
     :param filepath: filepath for the plot.
     :param filtration_range: array of various distances to use as ranges when splitting up the simplices being added.
     """
+    threshold = filtration_range[-1]
     figure = {
         'data': [],
         'layout': {},
-        'frames': []
+        'frames': [],
     }
     figure['layout']['title'] = title
+    figure['layout']['showlegend'] = False
     figure['layout']['scene'] = dict(xaxis=dict(range=[0, 1]),
                                      yaxis=dict(range=[0, 1]),
                                      zaxis=dict(range=[0, 1])
@@ -55,15 +58,26 @@ def wip_plot(point_cloud, filtrations, title, filepath, filtration_range):
     figure['layout']['hovermode'] = 'closest'
     figure['layout']['updatemenus'] = [{
         'buttons': [
-            {'args': [None, {'frame': {'duration': 500, 'redraw': True},
+            {'args': [None, {'frame': {'duration': 1000, 'redraw': True},
                              'fromcurrent': True,  # 'transition': {'duration': 300, 'easing': 'quadratic-in-out'}
                              }],
              'label': 'Play',
-             'method': 'animate'}
+             'method': 'animate'},
+            {
+                'args': [[None], {'frame': {'duration': 0, 'redraw': False}, 'mode': 'immediate',
+                                  'transition': {'duration': 0}}],
+                'label': 'Pause',
+                'method': 'animate'
+            }
         ],
+        'direction': 'left',
         'pad': {'r': 10, 't': 87},
-        'showactive': True,
-        'type': 'buttons'
+        'showactive': False,
+        'type': 'buttons',
+        'x': 0.1,
+        'xanchor': 'right',
+        'y': 0,
+        'yanchor': 'top'
     }]
     figure['layout']['sliders'] = {
         'args': [
@@ -107,112 +121,61 @@ def wip_plot(point_cloud, filtrations, title, filepath, filtration_range):
                                            color=next(colour_iter)),
                                name="Point cloud")
     figure['data'].append(point_trace)
-    figure['data'] += [go.Scatter3d(x=[], y=[], z=[]) for _ in range(len(filtration_range))]
+    # data figure to use for edges.
+    figure['data'].append(go.Scatter3d(x=[None], y=[None], z=[None]))
     # make frames:
     i = 0
-    #frame_data = [point_trace]
+    # frame_data = [point_trace]
+    xe = [None]
+    ye = [None]
+    ze = [None]
+    insertion_values = [threshold]
     for filtration in filtrations:
-        frame = {'data': None, 'name': str(filtration_range[i])}
+        frame = {'data': None, 'name': i}
         # Only the individual nodes will be added at 0, so no lines are needed.
-        #if filtration_range[i] > 0:
-        xe = []
-        ye = []
-        ze = []
-        insertion_values = []
-        for simplex in filtration:
-            for v in simplex:
-                xe.append(point_cloud[v][0])
-                ye.append(point_cloud[v][1])
-                ze.append(point_cloud[v][2])
-            # add None to break the line.
-            xe.append(None)
-            ye.append(None)
-            ze.append(None)
-            insertion_values.append(str(simplex.data))
+        if filtration_range[i] > 0:
+            # xe = []
+            # ye = []
+            # ze = []
+            for simplex in filtration:
+                for v in simplex:
+                    xe.append(point_cloud[v][0])
+                    ye.append(point_cloud[v][1])
+                    ze.append(point_cloud[v][2])
+                    insertion_values.append(simplex.data)
+                # add None to break the line.
+                xe.append(None)
+                ye.append(None)
+                ze.append(None)
+                # threshold to used here to set the maximum value of the scale
+                insertion_values.append(threshold)
         edge_trace = go.Scatter3d(x=xe,
                                   y=ye,
                                   z=ze,
-                                  mode='lines',
-                                  line=dict(color=next(colour_iter)), )
-            #frame_data.append(edge_trace)
-            #frame_data.insert(0, edge_trace)
+                                  mode='lines',  # +markers',
+                                  line=dict(color=insertion_values,
+                                            colorscale='Viridis',
+                                            showscale=True),
+                                  # marker=dict(symbol='circle',
+                                  #             size=1,
+                                  #             color='black')
+                                  )
+        # frame_data.append(edge_trace)
+        # frame_data.insert(0, edge_trace)
         # add all data from previous frames.
-        frame['data'] = [edge_trace]#frame_data.copy()
-        frame['traces'] = [i + 1]
+        frame['data'] = [edge_trace]  # frame_data.copy()
+        # update edge trace.
+        frame['traces'] = [1]  # [i + 1]
         figure['frames'].append(frame)
         slider_step = {'args': [
-            [filtration_range[i]],
-            {'frame': {'duration': 300, 'redraw': True},
+            [i],
+            {'frame': {'duration': 1000, 'redraw': True},
              'mode': 'immediate',
-             'transition': {'duration': 300}}
+             'transition': {'duration': 0}}
         ],
-            'label': filtration_range[i],
+            'label': '{:.3}'.format(filtration_range[i]),
             'method': 'animate'}
         sliders_dict['steps'].append(slider_step)
         i += 1
     figure['layout']['sliders'] = [sliders_dict]
-    plotly.offline.plot(figure, filename=filepath + title + ".html")
-
-
-def plot_connected_components_animated_d(x, filtrations, title, filepath, filtration_range):
-    xn = x[:, 0]
-    yn = x[:, 1]
-    zn = x[:, 2]
-    colour_iter = cycle(kelly_colors)
-    # point trace always displayed.
-    point_trace = go.Scatter3d(x=xn,
-                               y=yn,
-                               z=zn,
-                               mode='markers',
-                               marker=dict(symbol='circle',
-                                           size=1,
-                                           color='black'))
-    data = []  # [point_trace]
-    frames = []
-    for filtration in filtrations:
-        xe = []
-        ye = []
-        ze = []
-        for simplex in filtration:
-            for v in simplex:
-                xe.append(x[v][0])
-                ye.append(x[v][1])
-                ze.append(x[v][2])
-            xe.append(None)
-            ye.append(None)
-            ze.append(None)
-        edge_trace = go.Scatter3d(x=xe,
-                                  y=ye,
-                                  z=ze,
-                                  mode='lines',
-                                  line=dict(color=next(colour_iter)))
-        data.append(edge_trace)
-        frames.append(dict(data=data.copy()))
-
-    layout = go.Layout(title=title,
-                       # scene=dict(
-                       #     xaxis=dict(nticks=4, range=[0, 1], autorange=False),
-                       #     yaxis=dict(nticks=4, range=[0, 1], autorange=False),
-                       #     zaxis=dict(nticks=4, range=[0, 1], autorange=False),
-                       # ),
-                       # width=1000,
-                       # margin=dict(
-                       #     r=20, l=10,
-                       #     b=10, t=10),
-                       updatemenus=[{
-                           'buttons': [
-                               {'args': [None],
-                                'label': 'Play',
-                                'method': 'animate'}
-                           ],
-                           'pad': {'r': 10, 't': 87},
-                           'showactive': False,
-                           'type': 'buttons'
-                       }]
-                       )
-    plotly.offline.plot({
-        "data": [point_trace],
-        "frames": frames,
-        "layout": layout
-
-    }, filename=filepath + title + ".html", auto_play=False)
+    plotly.offline.plot(figure, filename=filepath + title + ".html", auto_play=False, auto_open=False)
