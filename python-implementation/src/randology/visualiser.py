@@ -35,7 +35,7 @@ def plot_3d(point_cloud_array):
         ax.scatter(xs, ys, zs, '.', s=1)
 
 
-def plot_3d_interactive(point_clouds, title, filepath) -> None:
+def plot_3d_interactive(point_clouds, title) -> None:
     """
     Create an interactive plot of the point clouds supplied.
 
@@ -60,7 +60,7 @@ def plot_3d_interactive(point_clouds, title, filepath) -> None:
     plotly.offline.plot({
         "data": data,
         "layout": go.Layout(title=title),
-    }, filename=filepath + title + ".html")
+    }, filename=title + ".html")
 
 
 def plot_complex(x, edges, title):
