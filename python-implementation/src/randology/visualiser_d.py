@@ -3,7 +3,6 @@ import numpy as np
 import plotly
 import plotly.graph_objs as go
 from itertools import cycle
-from cechmate.filtrations import Rips
 
 # Distinct colours to use for plotting.
 kelly_colors = ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1', '#BE0032', '#C2B280', '#848482',
