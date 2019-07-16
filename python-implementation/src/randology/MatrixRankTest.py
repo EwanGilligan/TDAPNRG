@@ -7,6 +7,7 @@ from GF2Matrix import IntMatrix
 class MatrixRankTest(HomologyTest):
 
     def generate_reference_distribution(self, reference_rng):
+        # no extra steps for the reference distribution in this test.
         return self.generate_distribution(reference_rng, self.filtration_range)
 
     def __init__(self, reference_rng, runs, number_of_points, matrix_size=64, homology_dimension=0, filtration_size=5,
@@ -30,6 +31,7 @@ class MatrixRankTest(HomologyTest):
         distances = np.ndarray((self.number_of_points, self.number_of_points))
         for i in range(self.number_of_points):
             for j in range(i + 1):
+                # As the field is GF2, addition is the same as addition.
                 distances[i][j] = distances[j][i] = (
                             points[i] + points[j]).rank()  # MatrixRankTest.rank_distance(points[i], points[j])
         return distances
