@@ -1,4 +1,4 @@
-from src.pnrg.LCGs.ICG import ICG
+from src.pnrg.LCGs import ICG
 import numpy as np
 
 
