@@ -1,12 +1,19 @@
 import numpy as np
 
 from pnrg import RNG
-from hashlib import sha256
+from hashlib import sha256, sha512, sha384, sha1
 
 
 class SHA(RNG):
 
     def __init__(self, hash_obj, seed: np.int64, salt: str):
+        """
+        Initialisation of SHA generator.
+
+        :param hash_obj: function to use to hash objects.
+        :param seed: The seed of the generator.
+        :param salt: salt for the hashing algorithm to use.
+        """
         super().__init__(hash_obj.__name__)
         self.hash_obj = hash_obj
         self.seed = np.int64(seed)
@@ -24,3 +31,23 @@ class SHA(RNG):
 
     def next_64_bits(self) -> np.int64:
         return self.next_int()
+
+
+class SHA256(SHA):
+    def __init__(self, seed, salt):
+        super().__init__(sha256, seed, salt)
+
+
+class SHA512(SHA):
+    def __init__(self, seed, salt):
+        super().__init__(sha512, seed, salt)
+
+
+class SHA384(SHA):
+    def __init__(self, seed, salt):
+        super().__init__(sha384, seed, salt)
+
+
+class SHA1(SHA):
+    def __init__(self, seed, salt):
+        super().__init__(sha1, seed, salt)
