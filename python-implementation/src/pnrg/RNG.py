@@ -49,3 +49,21 @@ class RNG(ABC):
         :return: 64 bit random bit string.
         """
         pass
+
+    def next_high_order(self, k):
+        """
+        Return the k high order bits of the output.
+        :param k: How many high order bits to take.
+        :return:
+        """
+        return np.uint64(self.next_64_bits()) >> np.uint64(64 - k)
+
+    def next_low_order(self, k):
+        """
+        Return the k low order bits of the next output.
+        :param k: How many low order bits to take.
+        :return:
+        """
+        n = np.uint64(64 - k)
+        return np.uint64(self.next_64_bits()) << n >> n
+
