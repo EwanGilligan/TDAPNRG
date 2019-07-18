@@ -21,7 +21,7 @@ class Xorshift128p(RNG):
         return t + s
 
     def next_float(self) -> np.float64:
-        return self.next_int() / np.iinfo(np.int64).max
+        return abs(self.next_int()) / np.iinfo(np.int64).max
 
     def next_64_bits(self) -> np.int64:
         return self.next_int()
