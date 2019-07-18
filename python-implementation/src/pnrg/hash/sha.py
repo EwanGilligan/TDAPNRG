@@ -23,7 +23,8 @@ class SHA(RNG):
         self.seed += 1
         hashed_bytes = self.hash_obj(bytes(self.seed))
         hashed_bytes.update(self.salt)
-        int_value = int.from_bytes(hashed_bytes.digest(), byteorder='little') % np.iinfo(np.int64).max
+        bytes_value = hashed_bytes.digest()[:8]
+        int_value = int.from_bytes(bytes_value, byteorder='little', signed=True)
         return np.int64(int_value)
 
     def next_float(self) -> np.float64:
