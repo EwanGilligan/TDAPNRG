@@ -6,3 +6,4 @@ from .RNG import RNG
 from .FromBinaryFile import FromBinaryFile
 from .pythonRandom import pythonRandom
 from .Quasirandom import Quasirandom
+from .ToBinaryFile import create_binary_file
