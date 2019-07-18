@@ -21,7 +21,7 @@ class SHA(RNG):
 
     def next_int(self) -> np.int64:
         self.seed += 1
-        hashed_bytes = self.hash_obj(bytes(self.seed))
+        hashed_bytes = self.hash_obj(int(self.seed).to_bytes(8, byteorder='little'))
         hashed_bytes.update(self.salt)
         bytes_value = hashed_bytes.digest()[:8]
         int_value = int.from_bytes(bytes_value, byteorder='little', signed=True)
