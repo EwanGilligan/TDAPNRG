@@ -9,7 +9,7 @@ class Xoshiro256ss(RNG):
     Adapted from http://xoshiro.di.unimi.it/
     """
     # maximum value when calculating floating point values, as only the upper 53 bits are used.
-    max_float = (1 << 53)
+    max_float = (1 << 53) - 1
     # casted constants.
     u_5 = np.uint64(5)
     u_7 = np.uint64(7)
