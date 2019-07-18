@@ -4,10 +4,11 @@ import numpy as np
 
 
 class FromBinaryFile(RNG):
-    def __init__(self, filepath: str, size: int, name=None):
+    def __init__(self, filepath: str, size: int, name=None, loop_file=True):
         if name is None:
             name = "File-" + filepath.replace('/', '-')
         RNG.__init__(self, name)
+        self.loop_file = loop_file
         try:
             self.f = open(filepath, "rb", size * 64)
         except IOError:
@@ -27,9 +28,14 @@ class FromBinaryFile(RNG):
         byte = self.f.read(8)
         # checks that the end of the file hasn't been reached.
         if not byte:
-            # loops back to the beginning
-            self.f.seek(0)
-            return self.next_int()
+            if self.loop_file:
+                # loops back to the beginning
+                self.f.seek(0)
+                return self.next_int()
+            else:
+                # Raise an EOFError if looping around isn't set.
+                raise EOFError("Reached end of file.")
+
         return np.int64(int.from_bytes(byte, byteorder="little", signed=True))
 
     def next_float(self):
