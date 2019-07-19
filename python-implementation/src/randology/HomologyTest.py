@@ -64,6 +64,8 @@ class HomologyTest(ABC):
         is initialised. The test is passed if the p value of the single run is greater than 0.01, and this counts the
         number of passes.
 
+        Returns -1 if the generator reaches the end of its file.
+
         :param rng: Random number pnrg to test.
         :return: Number of times the rng passes the test.
         """
@@ -76,10 +78,14 @@ class HomologyTest(ABC):
                 self.reference_rng)
         else:
             reference_distribution = self.reference_distribution
-        for i in range(self.runs):
-            # if the p value is greater than 0.01
-            if self.single_run(rng, reference_distribution) > 0.01:
-                passes += 1
+        try:
+            for i in range(self.runs):
+                # if the p value is greater than 0.01
+                if self.single_run(rng, reference_distribution) > 0.01:
+                    passes += 1
+        except EOFError as ex:
+            print("Error testing " + rng.get_name() + ": " + str(ex))
+            return -1
         return passes
 
     def single_run(self, rng: RNG, reference_distribution: np.array) -> float:

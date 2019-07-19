@@ -197,6 +197,9 @@ class HypercubeTest(HomologyTest):
         if scale_list is None:
             scale_list = [1.0]
         for scale in scale_list:
+            # break if no more generators.
+            if len(generators) == 0:
+                break
             if verbose:
                 print("Scale:", scale)
             self.scale = scale
@@ -205,7 +208,10 @@ class HypercubeTest(HomologyTest):
                 start = time.time()
                 passes = self.perform_test(rng)
                 end = time.time()
-                if verbose:
+                # If the end of file is reached, then set the value to EOF.
+                if passes < 0:
+                    results_dict[rng.get_name()] = 'EOF'
+                elif verbose:
                     print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
                     print("Time elapsed:", end - start)
                 if passes <= failure_threshold:
