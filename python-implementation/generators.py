@@ -1,4 +1,6 @@
-from src.randology import *
+import os
+from typing import List, Iterable, Callable, Dict
+import numpy as np
 from src.pnrg.LCGs import *
 from src.pnrg.CSG import *
 from src.pnrg.LFSRs import *
@@ -16,36 +18,38 @@ generator_group_dict = {
 }
 
 
-def get_generator_dict(seeds):
+def get_generator_dict(seeds: Iterable[int]) -> Dict[str, RNG]:
     """
     Returns a dictionary containing generators
     :param seeds: list of values to use as the seed of the generators.
     :return: dict where the keys are the names of the random number generators, and the values are the generators.
     """
+    seed1 = next(seeds)
+    seed2 = next(seeds)
     return {
         # linear congruential generators.
-        'Randu': Randu(seeds[1]),
-        'Minstd': Minstd(seeds[1]),
-        'Glibc': Glibc(seeds[1]),
+        'Randu': Randu(seed1),
+        'Minstd': Minstd(seed1),
+        'Glibc': Glibc(seed1),
         'java.util.Random': FromBinaryFile("../pseudorandom-sequences/outjava.util.Random-seed1", 12000,
                                            "java.util.Random"),
-        'MWC': MWC(seeds[1]),
-        'EICG1': EICG1(seeds[1]),
+        'MWC': MWC(seed1),
+        'EICG1': EICG1(seed1),
         # Linear Feedback Shift Registers:
-        'LFSR': LFSR(seeds[1]),
-        'XorShift32': XorShift32(seeds[1]),
-        'XorShift64': XorShift64(seeds[1]),
-        'Xorshift128+': Xorshift128p(seeds[1], seeds[2]),
-        'Xoroshiro256+': Xoshiro256p(seeds),
-        'Xoshiro256**': Xoshiro256ss(seeds),
+        'LFSR': LFSR(seed1),
+        'XorShift32': XorShift32(seed1),
+        'XorShift64': XorShift64(seed1),
+        'Xorshift128+': Xorshift128p(seed1, seed2),
+        'Xoroshiro256+': Xoshiro256p(np.ndarray(seeds)),
+        'Xoshiro256**': Xoshiro256ss(np.ndarray(seeds)),
         # WELL generators:
-        'MersenneTwister': MersenneTwister(seeds[1]),
+        'MersenneTwister': MersenneTwister(seed1),
         # Cryptographically Secure Generators:
-        'BlumBlumShub': BlumBlumShub(seeds[1]),
-        'QCG631': QCG631(seeds[1]),
-        'QCG651': QCG651(seeds[1]),
-        'Webkit2': Webkit2(seeds[1]),
-        'GamrRand': GameRand(seeds[1]),
+        'BlumBlumShub': BlumBlumShub(seed1),
+        'QCG631': QCG631(seed1),
+        'QCG651': QCG651(seed1),
+        'Webkit2': Webkit2(seed1),
+        'GamrRand': GameRand(seed1),
         'PCG32': FromBinaryFile("../pseudorandom-sequences/outPCG32", 12000, "PCG32"),
         'Ranrot': FromBinaryFile("../pseudorandom-sequences/outRANROT", 12000, "Ranrot"),
         'Lamar': FromBinaryFile("../pseudorandom-sequences/outLamar", 12000, "Lamar"),
@@ -58,7 +62,7 @@ def get_generator_dict(seeds):
     }
 
 
-def get_generator_list(generator_list, seeds):
+def get_generator_list(generator_list: Iterable[str], seeds: Iterable[int]) -> Iterable[RNG]:
     """
     Takes a list of generators and seeds for the generators, and then creates an iterable of the specified generators.
 
@@ -70,7 +74,7 @@ def get_generator_list(generator_list, seeds):
     return map(generator_dict.__getitem__, generator_list)
 
 
-def generator_group(group):
+def generator_group(group: str) -> Callable[[Iterable], Iterable[RNG]]:
     """
     Creates a curried function that will return the specified group, when provided with seeds.
     :param group: Name of the group to return.
@@ -86,3 +90,16 @@ def generator_group(group):
         return get_generator_list(generator_group_dict[group], seeds)
 
     return get_subgroup
+
+
+def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RNG]:
+    """
+    Create a list of generators from a directory containing binary files.
+    :param directory_path: Path to the directory.
+    :param size: Size of the buffer to use for the generator.
+    :return: List of RNGS
+    """
+    generators = []
+    for filename in os.listdir(directory_path):
+        generators.append(FromBinaryFile(directory_path + '/' + filename, size))
+    return generators
