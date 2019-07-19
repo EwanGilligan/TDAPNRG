@@ -1,13 +1,9 @@
 import numpy as np
-# from scipy import stats
-from ripser import ripser
-# from typing import List
 from scipy import sparse
 from scipy import spatial
-from sklearn.metrics.pairwise import pairwise_distances
 import time
 
-from src.pnrg import RNG, FromBinaryFile
+from src.pnrg import RNG
 from src.randology import visualise_connected_components_animated
 from .HomologyTest import HomologyTest
 
