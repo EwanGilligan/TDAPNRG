@@ -4,6 +4,6 @@ from .RNG import RNG
 # from .LFSRs import *
 # from .CSG import *
 from .FromBinaryFile import FromBinaryFile
-from .pythonRandom import pythonRandom
+from .MersenneTwister import MersenneTwister
 from .Quasirandom import Quasirandom
 from .ToBinaryFile import create_binary_file
