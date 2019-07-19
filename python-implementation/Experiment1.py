@@ -84,11 +84,7 @@ test3 = HypercubeTest(runs=10, number_of_points=12000, dimension=3, homology_dim
                       reference_rng=get_reference_rng(), scale=0.15)
 test4 = HypercubeTest(runs=5, number_of_points=12000, dimension=3, homology_dimension=0, filtration_size=100,
                       reference_rng=get_reference_rng(), scale=0.075)
-# for generator in generators:
-#     test.visualise_failure(generator, "../visualisations/")
-#     test2.visualise_failure(generator, "../visualisations/")
-#     test3.visualise_failure(generator, "../visualisations/")
-#     test4.visualise_failure(generator, "../visualisations/")
+
 print("Scale:1.0")
 test.test_generator_list(get_generators())
 print("Scale:0.45")
@@ -97,4 +93,4 @@ print("Scale:0.15")
 test3.test_generator_list(get_generators())
 print("Scale 0.075")
 test4.test_generator_list(get_generators())
-# test.test_generators_multiple_scales(get_generators(), scale_list=[0.15, 0.45, 1.0], failure_threshold=1)
+
