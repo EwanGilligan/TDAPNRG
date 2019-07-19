@@ -59,6 +59,13 @@ def get_generator_dict(seeds):
 
 
 def get_generator_list(generator_list, seeds):
+    """
+    Takes a list of generators and seeds for the generators, and then creates an iterable of the specified generators.
+
+    :param generator_list: List of names of generators to test.
+    :param seeds: Indexable of seeds for the generators.
+    :return: iterable of RNGs
+    """
     generator_dict = get_generator_dict(seeds)
     return map(generator_dict.__getitem__, generator_list)
 
