@@ -31,7 +31,7 @@ class MatrixRankTest(HomologyTest):
         distances = np.ndarray((self.number_of_points, self.number_of_points))
         for i in range(self.number_of_points):
             for j in range(i + 1):
-                # As the field is GF2, addition is the same as addition.
+                # As the field is GF2, addition is the same as subtraction.
                 distances[i][j] = distances[j][i] = (
                             points[i] + points[j]).rank()  # MatrixRankTest.rank_distance(points[i], points[j])
         return distances

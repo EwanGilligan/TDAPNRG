@@ -8,7 +8,7 @@ from sklearn.metrics.pairwise import pairwise_distances
 import time
 
 from src.pnrg import RNG, FromBinaryFile
-from src.randology import plot_connected_components
+from src.randology import visualise_connected_components_animated
 from .HomologyTest import HomologyTest
 
 
@@ -95,18 +95,7 @@ class HypercubeTest(HomologyTest):
 
     def visualise_failure(self, rng: RNG, filepath: str):
         point_cloud = self.generate_points(rng, self.number_of_points, self.dimension, self.scale)
-        reference_point_cloud = self.generate_points(self.reference_rng, self.number_of_points, self.dimension,
-                                                     self.scale)
-        diagram = self.generate_diagrams(pairwise_distances(reference_point_cloud))[self.homology_dimension]
-        # This should be point before the diagram becomes fully connected.
-        epsilon = 0
-        for point in reversed(diagram):
-            if not np.isinf(point[1]):
-                epsilon = point[1]
-                break
-        filename = '{}-{}D-{}-{}'.format(rng.get_name(), self.dimension, self.number_of_points,
-                                         self.scale)
-        plot_connected_components(point_cloud, epsilon, filename, filepath, 20)
+        visualise_connected_components_animated(point_cloud, rng.get_name(), filepath, self.filtration_range)
 
     @staticmethod
     def make_sparse_dm(points: np.array, thresh):
