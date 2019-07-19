@@ -22,7 +22,9 @@ class SHA(RNG):
     def next_int(self) -> np.int64:
         self.seed += 1
         hashed_bytes = self.hash_obj(int(self.seed).to_bytes(8, byteorder='little', signed=True))
+        # salt the hash
         hashed_bytes.update(self.salt)
+        # only take the first 8 bytes.
         bytes_value = hashed_bytes.digest()[:8]
         int_value = int.from_bytes(bytes_value, byteorder='little', signed=True)
         return np.int64(int_value)
