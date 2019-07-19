@@ -10,7 +10,7 @@ class Webkit2(RNG):
         self.state = np.int64(seed)
 
     def next_int(self) -> np.int64:
-        self.state += (self.state * self.state) ** 5
+        self.state += (self.state * self.state) | 5
         return abs(self.state)
 
     def next_float(self) -> np.float64:

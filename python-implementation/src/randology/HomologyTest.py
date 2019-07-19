@@ -8,7 +8,8 @@ from scipy import stats
 from ripser import Rips, ripser
 from typing import List
 
-from pnrg import RNG, FromBinaryFile
+from pnrg import RNG
+from pnrg.binary import FromBinaryFile
 
 
 class HomologyTest(ABC):
