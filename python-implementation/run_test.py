@@ -28,6 +28,7 @@ def run_test():
     reference_rng = FromBinaryFile(data_dict['reference_rng'], n_points)
     # get the generators.
     generators = list(get_generators(generator_dict))
+    print(generators)
     output_dict = None
     # see which test is being done.
     if test_dict['name'] == HYPERCUBE:
@@ -47,10 +48,11 @@ def run_test():
 
 
 def get_generators(generator_dict):
+    salt = generator_dict['salt'] if 'salt' in generator_dict else None
     if 'group' in generator_dict:
-        return generators.generator_group(generator_dict['group'])(generator_dict['seeds'])
+        return generators.generator_group(generator_dict['group'], salt)(generator_dict['seeds'])
     elif 'list' in generator_dict:
-        return generators.get_generator_list(generator_dict['list'], generator_dict['seeds'])
+        return generators.get_generator_list(generator_dict['list'], generator_dict['seeds'], salt)
     elif 'directory' in generator_dict:
         raise NotImplemented()
     else:

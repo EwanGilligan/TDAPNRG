@@ -18,15 +18,16 @@ generator_group_dict = {
 }
 
 
-def get_generator_dict(seeds: List[int]) -> Dict[str, RNG]:
+def get_generator_dict(seeds: List[int], salt: str = None) -> Dict[str, RNG]:
     """
     Returns a dictionary containing generators
+    :param salt: A salt for the hashing algorithms. These won't be included if no salt is provided.
     :param seeds: list of values to use as the seed of the generators.
     :return: dict where the keys are the names of the random number generators, and the values are the generators.
     """
     seed1 = seeds[0]
     seed2 = seeds[1]
-    return {
+    dict = {
         # linear congruential generators.
         'Randu': Randu(seed1),
         'Minstd': Minstd(seed1),
@@ -60,12 +61,24 @@ def get_generator_dict(seeds: List[int]) -> Dict[str, RNG]:
         # Other:
         'Quasirandom': Quasirandom()
     }
+    # if a salt is provided.
+    if salt is not None:
+        dict.update({
+            # hashing algorithm generators.
+            "SHA256": SHA256(seed1, salt),
+            "SHA512": SHA512(seed1, salt),
+            "SHA384": SHA384(seed1, salt),
+            "SHA1": SHA1(seed1, salt)
+
+        })
+    return dict
 
 
-def get_generator_list(generator_list: Iterable[str], seeds: Iterable[int]) -> Iterable[RNG]:
+def get_generator_list(generator_list: Iterable[str], seeds: List[int], salt: str = None) -> Iterable[RNG]:
     """
     Takes a list of generators and seeds for the generators, and then creates an iterable of the specified generators.
 
+    :param salt:
     :param generator_list: List of names of generators to test.
     :param seeds: Indexable of seeds for the generators.
     :return: iterable of RNGs
@@ -74,20 +87,21 @@ def get_generator_list(generator_list: Iterable[str], seeds: Iterable[int]) -> I
     return map(generator_dict.__getitem__, generator_list)
 
 
-def generator_group(group: str) -> Callable[[Iterable], Iterable[RNG]]:
+def generator_group(group: str, salt: str = None) -> Callable[[Iterable], Iterable[RNG]]:
     """
     Creates a curried function that will return the specified group, when provided with seeds.
+    :param salt:
     :param group: Name of the group to return.
     :return: a function that takes the generator seeds, and returns an iterable of generators.
     """
     if group == 'fulltest':
         def get_full_test(seeds):
-            return get_generator_dict(seeds).values()
+            return iter(get_generator_dict(seeds, salt).values())
 
         return get_full_test
 
     def get_subgroup(seeds):
-        return get_generator_list(generator_group_dict[group], seeds)
+        return get_generator_list(generator_group_dict[group], seeds, salt)
 
     return get_subgroup
 
@@ -102,4 +116,4 @@ def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RN
     generators = []
     for filename in os.listdir(directory_path):
         generators.append(FromBinaryFile(directory_path + '/' + filename, size))
-    return generators
+    return iter(generators)
