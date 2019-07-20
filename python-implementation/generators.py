@@ -18,14 +18,14 @@ generator_group_dict = {
 }
 
 
-def get_generator_dict(seeds: Iterable[int]) -> Dict[str, RNG]:
+def get_generator_dict(seeds: List[int]) -> Dict[str, RNG]:
     """
     Returns a dictionary containing generators
     :param seeds: list of values to use as the seed of the generators.
     :return: dict where the keys are the names of the random number generators, and the values are the generators.
     """
-    seed1 = next(seeds)
-    seed2 = next(seeds)
+    seed1 = seeds[0]
+    seed2 = seeds[1]
     return {
         # linear congruential generators.
         'Randu': Randu(seed1),
@@ -40,8 +40,8 @@ def get_generator_dict(seeds: Iterable[int]) -> Dict[str, RNG]:
         'XorShift32': XorShift32(seed1),
         'XorShift64': XorShift64(seed1),
         'Xorshift128+': Xorshift128p(seed1, seed2),
-        'Xoroshiro256+': Xoshiro256p(np.ndarray(seeds)),
-        'Xoshiro256**': Xoshiro256ss(np.ndarray(seeds)),
+        'Xoroshiro256+': Xoshiro256p(np.array(seeds, dtype=np.int64)),
+        'Xoshiro256**': Xoshiro256ss(np.array(seeds, dtype=np.int64)),
         # WELL generators:
         'MersenneTwister': MersenneTwister(seed1),
         # Cryptographically Secure Generators:
