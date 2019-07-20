@@ -32,3 +32,5 @@ python-implementation/src/randology\.egg-info/
 pseudorandom-sequences/
 
 *.txt
+
+*.json
