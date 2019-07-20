@@ -1,4 +1,4 @@
-from pnrg.LCGs import EIG
+from src.pnrg.LCGs import EIG
 
 
 class EICG1(EIG):

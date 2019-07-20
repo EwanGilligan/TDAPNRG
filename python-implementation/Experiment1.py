@@ -8,8 +8,11 @@ import matplotlib
 from src.randology import *
 from src.pnrg.LCGs import *
 from src.pnrg.CSG import *
-from src.pnrg.LFSR import *
-from src.pnrg import FromBinaryFile, pythonRandom, Quasirandom
+from src.pnrg.LFSRs import *
+from src.pnrg.hash import *
+from src.pnrg.other import MersenneTwister, Quasirandom
+from src.pnrg import *
+from src.pnrg.binary import *
 
 seed1 = 0xDEADBEEF
 seed2 = 0xD978757273
@@ -36,27 +39,26 @@ def get_generators():
         Minstd(seed2),
         Glibc(seed1),
         Glibc(seed2),
-        pythonRandom(seed1),
-        pythonRandom(seed2),
         FromBinaryFile("../pseudorandom-sequences/outjava.util.Random-seed1", 12000, "java.util.Random"),
         FromBinaryFile("../pseudorandom-sequences/outjava.util.Random-seed2", 12000, "java.util.Random"),
-        FromBinaryFile("../pseudorandom-sequences/outMWCNR-seed1", 12000, "MWCNR"),
-        FromBinaryFile("../pseudorandom-sequences/outMWCNR-seed2", 12000, "MWCNR"),
+        MWC(seed1),
+        MWC(seed2),
         EICG1(seed1),
         EICG1(seed2),
         # Linear Feedback Shift Registers:
         LFSR(seed1),
         LFSR(seed2),
-        FromBinaryFile("../pseudorandom-sequences/outXorShift32-seed1", 12000, "XorShift32"),
-        FromBinaryFile("../pseudorandom-sequences/outXorShift32-seed2", 12000, "XorShift32"),
-        FromBinaryFile("../pseudorandom-sequences/outXorShift-seed1", 12000, "XorShift64"),
-        FromBinaryFile("../pseudorandom-sequences/outXorShift-seed2", 12000, "XorShift64"),
+        XorShift32(seed1),
+        XorShift32(seed2),
+        XorShift64(seed1),
+        XorShift64(seed2),
+        Xorshift128p(seed1, seed2),
         # WELL generators:
-        FromBinaryFile("../pseudorandom-sequences/outMersenneTwister-seed1", 12000, "MersenneTwister"),
-        FromBinaryFile("../pseudorandom-sequences/outMersenneTwister-seed2", 12000, "MersenneTwister"),
+        MersenneTwister(seed1),
+        MersenneTwister(seed2),
         # Cryptographically Secure Generators:
-        FromBinaryFile("../pseudorandom-sequences/outBlumBlumShub-seed1", 12000, "BlumBlubShub"),
-        FromBinaryFile("../pseudorandom-sequences/outBlumBlumShub-seed2", 12000, "BlumBlubShub"),
+        BlumBlumShub(seed1),
+        BlumBlumShub(seed2),
         QCG631(seed1),
         QCG651(seed1),
         Webkit2(seed1),
@@ -82,11 +84,7 @@ test3 = HypercubeTest(runs=10, number_of_points=12000, dimension=3, homology_dim
                       reference_rng=get_reference_rng(), scale=0.15)
 test4 = HypercubeTest(runs=5, number_of_points=12000, dimension=3, homology_dimension=0, filtration_size=100,
                       reference_rng=get_reference_rng(), scale=0.075)
-# for generator in generators:
-#     test.visualise_failure(generator, "../visualisations/")
-#     test2.visualise_failure(generator, "../visualisations/")
-#     test3.visualise_failure(generator, "../visualisations/")
-#     test4.visualise_failure(generator, "../visualisations/")
+
 print("Scale:1.0")
 test.test_generator_list(get_generators())
 print("Scale:0.45")
@@ -95,4 +93,4 @@ print("Scale:0.15")
 test3.test_generator_list(get_generators())
 print("Scale 0.075")
 test4.test_generator_list(get_generators())
-# test.test_generators_multiple_scales(get_generators(), scale_list=[0.15, 0.45, 1.0], failure_threshold=1)
+

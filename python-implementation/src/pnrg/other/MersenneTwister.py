@@ -4,7 +4,7 @@ import random
 from src.pnrg.RNG import RNG
 
 
-class pythonRandom(RNG):
+class MersenneTwister(RNG):
 
     def __init__(self, seed=None):
         super().__init__("PythonRandom")
