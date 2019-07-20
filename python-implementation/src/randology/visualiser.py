@@ -5,8 +5,8 @@ import plotly
 import plotly.graph_objs as go
 import pyximport
 
-pyximport.install()
-from .vrips import one_skeleton
+#pyximport.install()
+from vrips import one_skeleton
 
 
 def plot_3d(point_cloud_array):

@@ -1,5 +1,4 @@
 from scipy.spatial import distance
-import numpy as np
 cimport cython
 
 

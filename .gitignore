@@ -34,3 +34,9 @@ pseudorandom-sequences/
 *.txt
 
 *.json
+
+python-implementation/dist/
+
+python-implementation/build/
+
+python-implementation/src/randology/vrips\.c
