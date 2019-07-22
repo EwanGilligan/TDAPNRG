@@ -3,7 +3,7 @@ from scipy import sparse
 from scipy import spatial
 import time
 
-from src.pnrg import RNG
+from randology.pnrg import RNG
 from src.randology import visualise_connected_components_animated
 from .HomologyTest import HomologyTest
 

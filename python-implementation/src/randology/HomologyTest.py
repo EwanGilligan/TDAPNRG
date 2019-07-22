@@ -5,11 +5,11 @@ import time
 
 import numpy as np
 from scipy import stats
-from ripser import Rips, ripser
+from ripser import ripser
 from typing import List
 
-from pnrg import RNG
-from pnrg.binary import FromBinaryFile
+from randology.pnrg import RNG
+from randology.pnrg.binary import FromBinaryFile
 
 
 class HomologyTest(ABC):

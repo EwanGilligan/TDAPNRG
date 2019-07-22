@@ -1,4 +1,4 @@
-from pnrg import RNG
+from randology.pnrg import RNG
 from .HomologyTest import HomologyTest
 import numpy as np
 from GF2Matrix import IntMatrix

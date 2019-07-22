@@ -1,6 +1,6 @@
 import json
 import sys
-from pnrg.binary import FromBinaryFile
+from randology.pnrg.binary import FromBinaryFile
 from randology import *
 import generators
 

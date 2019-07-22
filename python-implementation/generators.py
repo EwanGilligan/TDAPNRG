@@ -1,13 +1,11 @@
 import os
 from typing import List, Iterable, Callable, Dict
 import numpy as np
-from src.pnrg.LCGs import *
-from src.pnrg.CSG import *
-from src.pnrg.LFSRs import *
-from src.pnrg.hash import *
-from src.pnrg.other import MersenneTwister, Quasirandom
-from src.pnrg import *
-from src.pnrg.binary import *
+from randology.pnrg.CSG import *
+from randology.pnrg.hash import *
+from randology.pnrg import MersenneTwister, Quasirandom
+from randology.pnrg import *
+from randology.pnrg.binary import *
 
 LCGs = ['Randu', 'Minstd', 'Glibc', 'MWC', 'EICG1']
 LFSRs = ['LFSR', 'XorShift32', 'XorShift64', 'Xorshift128+', 'Xoroshiro256+', 'Xoshiro256**']
