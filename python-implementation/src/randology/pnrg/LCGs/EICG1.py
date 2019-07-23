@@ -1,4 +1,4 @@
-from randology.pnrg import EIG
+from .EIG import EIG
 
 
 class EICG1(EIG):

@@ -1,4 +1,4 @@
-from randology.pnrg.LCGs.LCG import LCG
+from .LCG import LCG
 
 
 class Randu(LCG):

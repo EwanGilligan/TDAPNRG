@@ -1,4 +1,4 @@
-from randology.pnrg import LCG
+from .LCG import LCG
 
 
 class Minstd(LCG):

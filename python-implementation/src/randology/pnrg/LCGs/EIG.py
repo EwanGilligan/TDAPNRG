@@ -1,4 +1,4 @@
-from randology.pnrg import ICG
+from .ICG import ICG
 import numpy as np
 
 

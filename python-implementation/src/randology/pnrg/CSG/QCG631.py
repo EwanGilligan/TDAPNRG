@@ -1,4 +1,4 @@
-from randology.pnrg.CSG import QCG
+from .QCG import QCG
 
 
 class QCG631(QCG):

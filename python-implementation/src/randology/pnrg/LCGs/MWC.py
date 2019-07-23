@@ -2,6 +2,7 @@ import numpy as np
 
 from randology.pnrg import RNG
 
+
 def lrshift(val, n) -> np.int64:
     """
     Logically right shifts value by n places.
@@ -11,10 +12,12 @@ def lrshift(val, n) -> np.int64:
     """
     return (val % (1 << 64)) >> n
 
+
 class MWC(RNG):
     """
     An implementation of the Multiply-With-Carry generator from Numerical Recipes
     """
+
     def __init__(self, seed):
         super().__init__("MWCNR")
         self.seed = np.int64(seed)
