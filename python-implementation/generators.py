@@ -6,6 +6,7 @@ from randology.pnrg.hash import *
 from randology.pnrg.other import MersenneTwister, Quasirandom
 from randology.pnrg.binary import *
 from randology.pnrg.LFSRs import *
+from randology.pnrg.LCGs import *
 from randology.pnrg import RNG
 
 LCGs = ['Randu', 'Minstd', 'Glibc', 'MWC', 'EICG1']

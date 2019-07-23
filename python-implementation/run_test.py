@@ -3,6 +3,7 @@ import sys
 from randology.pnrg.binary import FromBinaryFile
 from randology import *
 import generators
+import pprint
 
 USAGE = "usage: python run_test.py <config file name>"
 HYPERCUBE = "hypercube"
@@ -10,11 +11,13 @@ MATRIX_RANK = "matrix rank"
 
 
 def run_test():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print(USAGE)
         exit(1)
+    config_file = sys.argv[1]
+    output_file = sys.argv[2]
     # get the config dictionary
-    data_dict = get_test_dict(sys.argv[1])
+    data_dict = get_test_dict(config_file)
     # get the values needed to configure the test.
     test_dict = data_dict['test']
     generator_dict = data_dict['generators']
@@ -28,8 +31,8 @@ def run_test():
     reference_rng = FromBinaryFile(data_dict['reference_rng'], n_points)
     # get the generators.
     generators = list(get_generators(generator_dict))
-    print(generators)
     output_dict = None
+    test = None
     # see which test is being done.
     if test_dict['name'] == HYPERCUBE:
         scales = test_dict['scales']
@@ -41,10 +44,20 @@ def run_test():
                              recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates)
         output_dict = test.test_generators_multiple_scales(generators, scales, failure_threshold, verbose)
     elif test_dict['name'] == MATRIX_RANK:
-        pass
+        matrix_size = test_dict['matrix_size']
+        test = MatrixRankTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, matrix_size=matrix_size,
+                              homology_dimension=homology_dimension, recalculate_distribution=recalculate_distribution)
+        output_dict = test.test_generator_list(generators, verbose)
     else:
         raise ValueError("Test name not recognised.")
-    print(output_dict)
+
+    with open(output_file, "w+") as f:
+        f.write("[Test Configuration]\n")
+        pprint.pprint(vars(test), stream=f, indent=4)
+        f.write("\n[Test Output]\n")
+        # Handles subdictionary formatting, which pprint doesn't
+        json.dump(output_dict, f, indent=2)
+        #pprint.pprint(output_dict, stream=f, indent=4)
 
 
 def get_generators(generator_dict):

@@ -176,7 +176,10 @@ class HypercubeTest(HomologyTest):
         If the generator passes at no scales, then -1 is there.
         """
         # -1 indicates a pass at no scales.
-        results_dict = {rng.get_name(): -1 for rng in generators}
+        results_dict = {rng.get_name(): {
+            'max_scale': -1,
+            'results': []
+        } for rng in generators}
         total_start = time.time()
         original_scale = self.scale
         if scale_list is None:
@@ -195,17 +198,19 @@ class HypercubeTest(HomologyTest):
                 end = time.time()
                 # If the end of file is reached, then set the value to EOF.
                 if passes < 0:
-                    results_dict[rng.get_name()] = 'EOF'
+                    results_dict[rng.get_name()]['max_scale'] = 'EOF'
                 elif verbose:
                     print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
                     print("Time elapsed:", end - start)
+                # add this result to the output.
+                results_dict[rng.get_name()]['results'].append('{}/{}'.format(passes, self.runs))
                 if passes <= failure_threshold:
                     generators.remove(rng)
                     if verbose:
                         print("Generator removed.")
                 else:
                     # record this as the new scale passed at.
-                    results_dict[rng.get_name()] = scale
+                    results_dict[rng.get_name()]['max_scale'] = scale
         total_end = time.time()
         total_time = total_end - total_start
         if verbose:
