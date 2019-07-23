@@ -18,7 +18,7 @@ setup(
         'numpy',
         'scipy',
         'Cython',
-        'scikit-tda',
+        'ripser',
         'matplotlib',
         'plotly',
         'GF2Matrix'

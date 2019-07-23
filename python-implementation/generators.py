@@ -3,9 +3,10 @@ from typing import List, Iterable, Callable, Dict
 import numpy as np
 from randology.pnrg.CSG import *
 from randology.pnrg.hash import *
-from randology.pnrg import MersenneTwister, Quasirandom
-from randology.pnrg import *
+from randology.pnrg.other import MersenneTwister, Quasirandom
 from randology.pnrg.binary import *
+from randology.pnrg.LFSRs import *
+from randology.pnrg import RNG
 
 LCGs = ['Randu', 'Minstd', 'Glibc', 'MWC', 'EICG1']
 LFSRs = ['LFSR', 'XorShift32', 'XorShift64', 'Xorshift128+', 'Xoroshiro256+', 'Xoshiro256**']
