@@ -168,3 +168,6 @@ class HomologyTest(ABC):
         total_end = time.time()
         total_time = total_end - total_start
         print("Done, total time:", total_time)
+
+    def __str__(self):
+        return str(vars(self))
