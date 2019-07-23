@@ -6,7 +6,7 @@ import time
 import numpy as np
 from scipy import stats
 from ripser import ripser
-from typing import List
+from typing import List, Dict
 
 from randology.pnrg import RNG
 from randology.pnrg.binary import FromBinaryFile
@@ -151,23 +151,29 @@ class HomologyTest(ABC):
             generators.append(FromBinaryFile(directory_path + '/' + filename, self.runs))
         self.test_generator_list(generators)
 
-    def test_generator_list(self, generators) -> None:
+    def test_generator_list(self, generators, verbose=True) -> Dict:
         """
         Takes and list of RNGs and then performs the Unit Hypercube test on all of them, printing the result of each
         test to the console. The time taken for each test is also printed.
 
+        :param verbose: Whether or not to print out intermediate results and timings.
         :param generators: Iterable object containing a list of RNG type objects to be tested.
         """
+        result_dict = {}
         total_start = time.time()
         for rng in generators:
             start = time.time()
             passes = self.perform_test(rng)
             end = time.time()
-            print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
-            print("Time elapsed:", end - start)
+            if verbose:
+                print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
+                print("Time elapsed:", end - start)
+            result_dict.update({rng.get_name(): '{}/{}'.format(passes, self.runs)})
         total_end = time.time()
         total_time = total_end - total_start
-        print("Done, total time:", total_time)
+        if verbose:
+            print("Done, total time:", total_time)
+        return result_dict
 
     def __str__(self):
         return str(vars(self))
