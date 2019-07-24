@@ -28,9 +28,10 @@ def run_test():
     verbose = data_dict['verbose'] if 'verbose' in data_dict else True
     recalculate_distribution = data_dict[
         'recalculate_distribution'] if 'recalculate_distribution' in data_dict else False
-    reference_rng = FromBinaryFile(data_dict['reference_rng'], n_points)
+    reference_rng = generators.download_generator(data_dict['reference_rng'], "reference_rng.rng",
+                                                  n_points)  # FromBinaryFile(data_dict['reference_rng'], n_points)
     # get the generators.
-    generators = list(get_generators(generator_dict))
+    generators_list = list(get_generators(generator_dict))
     output_dict = None
     test = None
     # see which test is being done.
@@ -42,12 +43,14 @@ def run_test():
         test = HypercubeTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, dimension=dimension,
                              homology_dimension=homology_dimension, filtration_size=filtration_size,
                              recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates)
-        output_dict = test.test_generators_multiple_scales(generators, scales, failure_threshold, verbose)
+        output_dict = test.test_generators_multiple_scales(generators_list, scales, failure_threshold, verbose)
     elif test_dict['name'] == MATRIX_RANK:
         matrix_size = test_dict['matrix_size']
-        test = MatrixRankTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, matrix_size=matrix_size,
-                              homology_dimension=homology_dimension, recalculate_distribution=recalculate_distribution)
-        output_dict = test.test_generator_list(generators, verbose)
+        test = MatrixRankTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs,
+                              matrix_size=matrix_size,
+                              homology_dimension=homology_dimension, recalculate_distribution=recalculate_distribution,
+                              store_data=True)
+        output_dict = test.test_generator_list(generators_list, verbose)
     else:
         raise ValueError("Test name not recognised.")
 
@@ -57,7 +60,7 @@ def run_test():
         f.write("\n[Test Output]\n")
         # Handles subdictionary formatting, which pprint doesn't
         json.dump(output_dict, f, indent=2)
-        #pprint.pprint(output_dict, stream=f, indent=4)
+        # pprint.pprint(output_dict, stream=f, indent=4)
 
 
 def get_generators(generator_dict):
@@ -67,7 +70,10 @@ def get_generators(generator_dict):
     elif 'list' in generator_dict:
         return generators.get_generator_list(generator_dict['list'], generator_dict['seeds'], salt)
     elif 'directory' in generator_dict:
-        raise NotImplemented()
+        loop_file = generator_dict['loop_file'] if 'loop file' in generator_dict else True
+        directory_url = generator_dict['directory']
+        generators.download_directory(directory_url, "data")
+        return generators.get_generators_from_directory("data", 12000)
     else:
         raise ValueError()
 

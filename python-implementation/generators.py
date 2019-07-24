@@ -8,6 +8,7 @@ from randology.pnrg.binary import *
 from randology.pnrg.LFSRs import *
 from randology.pnrg.LCGs import *
 from randology.pnrg import RNG
+import gdown
 
 LCGs = ['Randu', 'Minstd', 'Glibc', 'MWC', 'EICG1']
 LFSRs = ['LFSR', 'XorShift32', 'XorShift64', 'Xorshift128+', 'Xoroshiro256+', 'Xoshiro256**']
@@ -106,6 +107,17 @@ def generator_group(group: str, salt: str = None) -> Callable[[Iterable], Iterab
     return get_subgroup
 
 
+def download_directory(url: str, directory: str):
+    filename = directory + "/download.zip"
+    gdown.download(url, filename, quiet=False)
+    gdown.extractall(filename)
+
+
+def download_generator(url: str, filepath: str, size: int, loop_file: bool = True) -> RNG:
+    filepath = gdown.download(url, filepath, quiet=False)
+    return FromBinaryFile(filepath, size=size, loop_file=loop_file)
+
+
 def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RNG]:
     """
     Create a list of generators from a directory containing binary files.
@@ -115,5 +127,8 @@ def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RN
     """
     generators = []
     for filename in os.listdir(directory_path):
-        generators.append(FromBinaryFile(directory_path + '/' + filename, size))
+        # don't use the downloaded file.
+        if filename.endswith(".zip"):
+            continue
+        generators.append(FromBinaryFile(directory_path + '/' + filename, size, name=filename))
     return iter(generators)
