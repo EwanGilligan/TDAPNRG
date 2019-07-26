@@ -33,8 +33,8 @@ def get_generator_dict(seeds: List[int], salt: str = None) -> Dict[str, RNG]:
         'Randu': Randu(seed1),
         'Minstd': Minstd(seed1),
         'Glibc': Glibc(seed1),
-        'java.util.Random': FromBinaryFile("../pseudorandom-sequences/outjava.util.Random-seed1", 12000,
-                                           "java.util.Random"),
+        # 'java.util.Random': FromBinaryFile("../pseudorandom-sequences/outjava.util.Random-seed1", 12000,
+        #                                    "java.util.Random"),
         'MWC': MWC(seed1),
         'EICG1': EICG1(seed1),
         # Linear Feedback Shift Registers:
@@ -52,13 +52,13 @@ def get_generator_dict(seeds: List[int], salt: str = None) -> Dict[str, RNG]:
         'QCG651': QCG651(seed1),
         'Webkit2': Webkit2(seed1),
         'GamrRand': GameRand(seed1),
-        'PCG32': FromBinaryFile("../pseudorandom-sequences/outPCG32", 12000, "PCG32"),
-        'Ranrot': FromBinaryFile("../pseudorandom-sequences/outRANROT", 12000, "Ranrot"),
-        'Lamar': FromBinaryFile("../pseudorandom-sequences/outLamar", 12000, "Lamar"),
-        'Rule30': FromBinaryFile("../pseudorandom-sequences/outRule30", 12000, "Rule30"),
+        # 'PCG32': FromBinaryFile("../pseudorandom-sequences/outPCG32", 12000, "PCG32"),
+        # 'Ranrot': FromBinaryFile("../pseudorandom-sequences/outRANROT", 12000, "Ranrot"),
+        # 'Lamar': FromBinaryFile("../pseudorandom-sequences/outLamar", 12000, "Lamar"),
+        # 'Rule30': FromBinaryFile("../pseudorandom-sequences/outRule30", 12000, "Rule30"),
         # True Random:
-        'TrueRandom2': FromBinaryFile("../random-org-seq/TrueRandom2", 12000),
-        'TrueRandom3': FromBinaryFile("../random-org-seq/TrueRandom3", 12000),
+        # 'TrueRandom2': FromBinaryFile("../random-org-seq/TrueRandom2", 12000),
+        # 'TrueRandom3': FromBinaryFile("../random-org-seq/TrueRandom3", 12000),
         # Other:
         'Quasirandom': Quasirandom()
     }
