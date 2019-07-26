@@ -147,3 +147,67 @@ Size of matrix to use for the matrix rank test, represented as an integer in \[1
 "matrix_size": 64
 ```
 ## generators
+This object specifies which generators will be used in the test. 
+There are three modes, which fall into two categories of pre-generated and runtime generated.
+### Runtime Generated.
+This mode generates the values at runtime.
+
+The two modes for selecting generators are `group` or `list`. Only one is required.
+
+___
+
+**group**
+
+Specify a premade group of generators to test, such as linear congruential generators.
+These lists can be found in the `generators.py` file.
+```metadata json
+"group": "LFSRs"
+```
+___
+**list**
+
+Specify a list of specific generators to test. The full list of generators currently supported can be 
+found in the `generators.py` file.
+```metadata json
+"list": ["Randu", "MWC", "XorShift32"]
+```
+___
+**seeds**\[optional]
+
+A list of 4 integers to use as seeds for the random number generators. 
+If this isn't provided, then they will be generated using python's `random` module.
+```metadata json
+"seeds": [
+      23525325,
+      125325325,
+      373592855,
+      212601099710477
+    ]
+```
+___
+**salt**\[optional]
+
+A string salt to use for the generators that use hashing algorithms. If not provided, then hashing generators won't be included.
+```metadata json
+"salt": "salty"
+```
+### Pre-generated.
+This mode involves downloading binary files to use for the generators.
+___
+**directory**
+
+Link to a zipped file containing the binary files, stored on google drive. 
+Note that the files should be zipped together, not a zipped folder.
+```metadata json
+"directory": "https://drive.google.com/uc?id=<FILE ID>"
+```
+Can be generated from google drive by right clicking the file, and creating shareable link.
+This may have ```open``` instead of ```uc```, but you can just replace it.
+___
+**loop_file**\[optional]
+
+Whether or not to loop back to the start of a binary file, if the end is reached. 
+This is represented by a boolean. True by default.
+```metadata json
+"loop_file": true
+```
