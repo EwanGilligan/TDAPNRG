@@ -31,7 +31,8 @@ def run_test():
     recalculate_distribution = data_dict[
         'recalculate_distribution'] if 'recalculate_distribution' in data_dict else False
     reference_rng = generators.download_generator(data_dict['reference_rng'], "reference_rng",
-                                                  n_points)  # FromBinaryFile(data_dict['reference_rng'], n_points)
+                                                  n_points,
+                                                  verbose=verbose)  # FromBinaryFile(data_dict['reference_rng'], n_points)
     # get the generators.
     generators_list = list(get_generators(generator_dict))
     output_dict = None
@@ -66,7 +67,7 @@ def run_test():
         # pprint.pprint(output_dict, stream=f, indent=4)
 
 
-def get_generators(generator_dict):
+def get_generators(generator_dict, verbose: bool = True):
     salt = generator_dict['salt'] if 'salt' in generator_dict else None
     if 'group' in generator_dict:
         return generators.generator_group(generator_dict['group'], salt)(generator_dict['seeds'])
@@ -75,7 +76,7 @@ def get_generators(generator_dict):
     elif 'directory' in generator_dict:
         loop_file = generator_dict['loop_file'] if 'loop file' in generator_dict else True
         directory_url = generator_dict['directory']
-        generators.download_directory(directory_url, os.environ['DATADIR'])
+        generators.download_directory(directory_url, os.environ['DATADIR'], verbose=verbose)
         return generators.get_generators_from_directory(os.environ['DATADIR'], 12000, loop_file)
     else:
         raise ValueError()

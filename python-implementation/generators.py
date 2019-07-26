@@ -107,14 +107,14 @@ def generator_group(group: str, salt: str = None) -> Callable[[Iterable], Iterab
     return get_subgroup
 
 
-def download_directory(url: str, directory: str):
+def download_directory(url: str, directory: str, verbose: bool = True):
     filename = directory + "download.zip"
-    gdown.download(url, filename, quiet=False)
+    gdown.download(url, filename, quiet=not verbose)
     gdown.extractall(filename)
 
 
-def download_generator(url: str, filepath: str, size: int, loop_file: bool = True) -> RNG:
-    filepath = gdown.download(url, filepath, quiet=False)
+def download_generator(url: str, filepath: str, size: int, loop_file: bool = True, verbose: bool = True) -> RNG:
+    filepath = gdown.download(url, filepath, quiet=not verbose)
     return FromBinaryFile(filepath, size=size, loop_file=loop_file)
 
 
