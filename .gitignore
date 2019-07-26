@@ -40,3 +40,5 @@ python-implementation/dist/
 python-implementation/build/
 
 python-implementation/src/randology/vrips\.c
+
+python-implementation/data/
