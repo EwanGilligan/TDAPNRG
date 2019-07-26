@@ -11,7 +11,6 @@ RUN apk add --no-cache openblas-dev freetype-dev
 RUN pip install Cython
 RUN pip install numpy
 RUN pip install GF2Matrix ripser
-RUN pip install gdown
 COPY . /user/src/randology
 RUN python setup.py install
 # remove dependancies not required at runtime.
