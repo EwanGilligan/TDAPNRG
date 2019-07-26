@@ -211,3 +211,40 @@ This is represented by a boolean. True by default.
 ```metadata json
 "loop_file": true
 ```
+___
+## Example
+```metadata json
+{
+  "test": {
+    "name": "hypercube",
+    "dimension": 3,
+    "scales": [
+      0.15,
+      0.45,
+      1
+    ],
+    "failure_threshold": 3,
+    "delayed_coordinates": false,
+    "visualisations": "none"
+  },
+  "reference_rng": "https://drive.google.com/uc?id=<FILE ID>",
+  "runs": 10,
+  "n_points": 12000,
+  "homology_dimension": 0,
+  "filtration_size": 20,
+  "generators": {
+    "list": ["Randu", "MWC", "XorShift32"],
+    "seeds": [
+      23525325,
+      125325325,
+      373592855,
+      212601099710477
+    ],
+    "salt": "salt"
+  },
+  "verbose": true,
+  "recalculate_distribution": false,
+  "store_data": true,
+  "gpu": false
+}
+```
