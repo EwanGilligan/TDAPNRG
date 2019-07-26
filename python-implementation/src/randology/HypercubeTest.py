@@ -24,7 +24,7 @@ class HypercubeTest(HomologyTest):
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  scale: float = 1.0, homology_dimension: int = 0, filtration_size: int = 20,
                  max_filtration_value: float = None, recalculate_distribution=False, delayed_coordinates=False,
-                 store_data=False):
+                 store_data=False, gpu=False):
         """
         Initialises a new HypercubeTest object.
 
@@ -42,7 +42,7 @@ class HypercubeTest(HomologyTest):
         # self.filtration_size = len(self.filtration_range)
         self.scale = scale
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
-                         max_filtration_value, recalculate_distribution, store_data)
+                         max_filtration_value, recalculate_distribution, store_data, gpu)
         # Delayed coordinates can only be used for 3D. Working on making it more general.
         assert not delayed_coordinates or (
                 delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
@@ -68,7 +68,11 @@ class HypercubeTest(HomologyTest):
         else:
             points = self.generate_points(rng, self.number_of_points, self.dimension, scale)
         # distance_matrix = pairwise_distances(points)
-        sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
+        if self.gpu:
+            # TODO add  in GPU calculation.
+            raise NotImplementedError("GPU calculation of distance matrix not implemented yet.")
+        else:
+            sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
         if self.f is not None:
             output_string = "[Points]\n"
             output_string += str(points)

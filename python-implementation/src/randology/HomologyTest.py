@@ -14,7 +14,7 @@ from randology.pnrg.binary import FromBinaryFile
 
 class HomologyTest(ABC):
     def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value,
-                 recalculate_distribution, store_data=False):
+                 recalculate_distribution, store_data=False, gpu=False):
         self.reference_rng = reference_rng
         self.number_of_points = number_of_points
         self.runs = runs
@@ -24,6 +24,7 @@ class HomologyTest(ABC):
         # self.filtration = Rips(maxdim=self.homology_dimension, verbose=True, thresh=self.filtration_range[-1])
         self.reference_distribution = None
         self.recalculate_distribution = recalculate_distribution
+        self.gpu = gpu
         self.f = None
         if store_data:
             filename = os.environ['OUTPUTDIR'] + self.get_data_file_name() + '.txt'

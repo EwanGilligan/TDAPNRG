@@ -27,6 +27,7 @@ def run_test():
     filtration_size = data_dict['filtration_size']
     verbose = data_dict['verbose'] if 'verbose' in data_dict else True
     store_data = data_dict['store_data'] if 'store_data' in data_dict else False
+    gpu = data_dict['gpu'] if 'gpu' in data_dict else False
     recalculate_distribution = data_dict[
         'recalculate_distribution'] if 'recalculate_distribution' in data_dict else False
     reference_rng = generators.download_generator(data_dict['reference_rng'], "reference_rng",
@@ -44,7 +45,7 @@ def run_test():
         test = HypercubeTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, dimension=dimension,
                              homology_dimension=homology_dimension, filtration_size=filtration_size,
                              recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates,
-                             store_data=store_data)
+                             store_data=store_data, gpu=gpu)
         output_dict = test.test_generators_multiple_scales(generators_list, scales, failure_threshold, verbose)
     elif test_dict['name'] == MATRIX_RANK:
         matrix_size = test_dict['matrix_size']
