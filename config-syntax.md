@@ -5,12 +5,22 @@ These are the fields in the top level of the json.
 **test** 
 
 [see test section](#test)
-
+```metadata json
+"test": {
+    ...
+}
+```
 ___
 
 **generators**
 
 [see generators section](#generators)
+```metadata json
+"generators":{
+    ...
+}
+```
+
 ___
 
 **reference_rng** 
