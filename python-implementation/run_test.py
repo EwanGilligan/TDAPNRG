@@ -5,6 +5,8 @@ from randology import *
 import generators
 import pprint
 import os
+import random
+import numpy as np
 
 USAGE = "usage: python run_test.py <config file name>"
 HYPERCUBE = "hypercube"
@@ -43,11 +45,13 @@ def run_test():
         dimension = test_dict['dimension']
         delayed_coordinates = test_dict['delayed_coordinates'] if 'delayed_coordinates' in test_dict else False
         failure_threshold = test_dict['failure_threshold'] if 'delayed_coordinates' in test_dict else 1
+        visualisations = test_dict['visualisations'] if 'visualisations' in test_dict else None
         test = HypercubeTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, dimension=dimension,
                              homology_dimension=homology_dimension, filtration_size=filtration_size,
                              recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates,
                              store_data=store_data, gpu=gpu)
-        output_dict = test.test_generators_multiple_scales(generators_list, scales, failure_threshold, verbose)
+        output_dict = test.test_generators_multiple_scales(generators_list, scales, failure_threshold, verbose,
+                                                           visualisations=visualisations)
     elif test_dict['name'] == MATRIX_RANK:
         matrix_size = test_dict['matrix_size']
         test = MatrixRankTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs,
@@ -69,10 +73,12 @@ def run_test():
 
 def get_generators(generator_dict, verbose: bool = True):
     salt = generator_dict['salt'] if 'salt' in generator_dict else None
+    # generates 4 random numbers if seeds isn't provided.
+    seeds = generator_dict['seeds'] if 'seeds' in generator_dict else [random.getrandbits(64)] * 4
     if 'group' in generator_dict:
-        return generators.generator_group(generator_dict['group'], salt)(generator_dict['seeds'])
+        return generators.generator_group(generator_dict['group'], salt)(seeds)
     elif 'list' in generator_dict:
-        return generators.get_generator_list(generator_dict['list'], generator_dict['seeds'], salt)
+        return generators.get_generator_list(generator_dict['list'], seeds, salt)
     elif 'directory' in generator_dict:
         loop_file = generator_dict['loop_file'] if 'loop file' in generator_dict else True
         directory_url = generator_dict['directory']
