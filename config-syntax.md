@@ -87,6 +87,63 @@ Whether or not to use CUDA optimisations, represented as a boolean. This is fals
 "gpu": false
 ```
 
-# test
+## test
+This object contains information specific to each individual test. Each object must contain a ```name```
+field to specify which test.
+### Hypercube Test
+```metadata json
+"name": "hypercube"
+```
+___
+**dimension**
 
+The dimension of the hypercube to sample points from within, represented as an integer.
+```metadata json
+"dimension": 3
+```
+___
+**scales**
+
+List of floats to use as different side lengths of hypercube to sample from within. 
+These are in (0,1]. The generators will be tested in the order given, and the output will specify
+the last scale at which the generator passes, or -1 if it passes at no scales.
+```metadata json
+"scales": [0.15, 0.3, 0.45, 1]
+```
+___
+**failure_threshold**
+
+This is the number of passes a generator must exceed in order to be deemed to pass the test.
+If the number of passes is less than or equal to the failure threshold, then it is considered a failure.
+```metadata json
+"failure_threshold": 5
+```
+___
+**delayed_coordinates**\[optional]
+
+Whether or not to use the alternate method of point generator, called delayed coordinates.
+This is false by default.
+```metadata json
+"delayed_coordinates": false
+```
+___
+**visualisations**\[optional]
+
+This determines when visualisations will be produced. If `fail`, then visualisations will be produced when
+a generator fails the test. If 'all', then visualisations will be produced for every generator at all scales.
+By default, no visualisations are produced. Note that visualisations are only supported for 3D.
+```metadata json
+"visualisations": "all"
+```
+### Matrix Rank Test
+```metadata json
+"name": "matrix rank"
+```
+___
+**matrix_size**
+
+Size of matrix to use for the matrix rank test, represented as an integer in \[1, 64].
+```metadata json
+"matrix_size": 64
+```
 ## generators
