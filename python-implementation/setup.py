@@ -21,7 +21,8 @@ setup(
         'ripser',
         'matplotlib',
         'plotly',
-        'GF2Matrix'
+        'GF2Matrix',
+        'gdown'
     ],
     ext_modules=cythonize(extensions)
 )
