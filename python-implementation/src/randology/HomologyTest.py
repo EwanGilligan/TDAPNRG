@@ -14,7 +14,7 @@ from randology.pnrg.binary import FromBinaryFile
 
 class HomologyTest(ABC):
     def __init__(self, reference_rng, runs, number_of_points, homology_dimension, filtration_size, filtration_value,
-                 recalculate_distribution):
+                 recalculate_distribution, store_data=False):
         self.reference_rng = reference_rng
         self.number_of_points = number_of_points
         self.runs = runs
@@ -24,6 +24,10 @@ class HomologyTest(ABC):
         # self.filtration = Rips(maxdim=self.homology_dimension, verbose=True, thresh=self.filtration_range[-1])
         self.reference_distribution = None
         self.recalculate_distribution = recalculate_distribution
+        self.f = None
+        if store_data:
+            filename = os.environ['OUTPUTDIR'] + self.get_data_file_name() + '.txt'
+            self.f = open(filename, "w+")
 
     def generate_diagrams(self, distance_matrix, threshold) -> List[np.ndarray]:
         """
@@ -177,3 +181,10 @@ class HomologyTest(ABC):
 
     def __str__(self):
         return str(vars(self))
+
+    @abstractmethod
+    def get_data_file_name(self) -> str:
+        """
+        Get the name of the file in which to store the intermediate data.
+        """
+        pass

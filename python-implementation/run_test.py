@@ -4,6 +4,7 @@ from randology.pnrg.binary import FromBinaryFile
 from randology import *
 import generators
 import pprint
+import os
 
 USAGE = "usage: python run_test.py <config file name>"
 HYPERCUBE = "hypercube"
@@ -11,11 +12,10 @@ MATRIX_RANK = "matrix rank"
 
 
 def run_test():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         print(USAGE)
         exit(1)
     config_file = sys.argv[1]
-    output_file = sys.argv[2]
     # get the config dictionary
     data_dict = get_test_dict(config_file)
     # get the values needed to configure the test.
@@ -26,9 +26,10 @@ def run_test():
     homology_dimension = data_dict['homology_dimension']
     filtration_size = data_dict['filtration_size']
     verbose = data_dict['verbose'] if 'verbose' in data_dict else True
+    store_data = data_dict['store_data'] if 'store_data' in data_dict else False
     recalculate_distribution = data_dict[
         'recalculate_distribution'] if 'recalculate_distribution' in data_dict else False
-    reference_rng = generators.download_generator(data_dict['reference_rng'], "reference_rng.rng",
+    reference_rng = generators.download_generator(data_dict['reference_rng'], "reference_rng",
                                                   n_points)  # FromBinaryFile(data_dict['reference_rng'], n_points)
     # get the generators.
     generators_list = list(get_generators(generator_dict))
@@ -42,18 +43,19 @@ def run_test():
         failure_threshold = test_dict['failure_threshold'] if 'delayed_coordinates' in test_dict else 1
         test = HypercubeTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs, dimension=dimension,
                              homology_dimension=homology_dimension, filtration_size=filtration_size,
-                             recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates)
+                             recalculate_distribution=recalculate_distribution, delayed_coordinates=delayed_coordinates,
+                             store_data=store_data)
         output_dict = test.test_generators_multiple_scales(generators_list, scales, failure_threshold, verbose)
     elif test_dict['name'] == MATRIX_RANK:
         matrix_size = test_dict['matrix_size']
         test = MatrixRankTest(reference_rng=reference_rng, number_of_points=n_points, runs=runs,
                               matrix_size=matrix_size,
                               homology_dimension=homology_dimension, recalculate_distribution=recalculate_distribution,
-                              store_data=True)
+                              store_data=store_data)
         output_dict = test.test_generator_list(generators_list, verbose)
     else:
         raise ValueError("Test name not recognised.")
-
+    output_file = os.environ['OUTPUTDIR'] + test.get_data_file_name() + "-summary.txt"
     with open(output_file, "w+") as f:
         f.write("[Test Configuration]\n")
         pprint.pprint(vars(test), stream=f, indent=4)
@@ -72,8 +74,8 @@ def get_generators(generator_dict):
     elif 'directory' in generator_dict:
         loop_file = generator_dict['loop_file'] if 'loop file' in generator_dict else True
         directory_url = generator_dict['directory']
-        generators.download_directory(directory_url, "data")
-        return generators.get_generators_from_directory("data", 12000)
+        generators.download_directory(directory_url, os.environ['DATADIR'])
+        return generators.get_generators_from_directory(os.environ['DATADIR'], 12000, loop_file)
     else:
         raise ValueError()
 

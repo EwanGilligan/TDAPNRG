@@ -108,7 +108,7 @@ def generator_group(group: str, salt: str = None) -> Callable[[Iterable], Iterab
 
 
 def download_directory(url: str, directory: str):
-    filename = directory + "/download.zip"
+    filename = directory + "download.zip"
     gdown.download(url, filename, quiet=False)
     gdown.extractall(filename)
 
@@ -118,9 +118,10 @@ def download_generator(url: str, filepath: str, size: int, loop_file: bool = Tru
     return FromBinaryFile(filepath, size=size, loop_file=loop_file)
 
 
-def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RNG]:
+def get_generators_from_directory(directory_path: str, size: int, loop_file: bool = True) -> Iterable[RNG]:
     """
     Create a list of generators from a directory containing binary files.
+    :param loop_file: Whether or not the generator will loop back to the start of the file.
     :param directory_path: Path to the directory.
     :param size: Size of the buffer to use for the generator.
     :return: List of RNGS
@@ -130,5 +131,5 @@ def get_generators_from_directory(directory_path: str, size: int) -> Iterable[RN
         # don't use the downloaded file.
         if filename.endswith(".zip"):
             continue
-        generators.append(FromBinaryFile(directory_path + '/' + filename, size, name=filename))
+        generators.append(FromBinaryFile(directory_path + filename, size, name=filename, loop_file=loop_file))
     return iter(generators)
