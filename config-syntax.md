@@ -1,7 +1,16 @@
 #Fields
 
-**test** [see test section](#test)
+These are the fields in the top level of the json.
 
+**test** 
+
+[see test section](#test)
+
+___
+
+**generators**
+
+[see generators section](#generators)
 ___
 
 **reference_rng** 
@@ -80,4 +89,4 @@ Whether or not to use CUDA optimisations, represented as a boolean. This is fals
 
 # test
 
-## generator
+## generators
