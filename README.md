@@ -46,3 +46,5 @@ sudo bash ./run.sh relative/path/to/output_directory relative/path/to/config_fil
 ```
 
 For infomation on writing config files, [see config-syntax.md](config-syntax.md)
+
+The output of the program will then be stored in the output directory mounted.
