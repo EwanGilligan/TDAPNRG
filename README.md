@@ -31,3 +31,18 @@ Or for install:
 # TDAPNRG/python-implementation/
 python setup.py install
 ```
+
+## Running with Docker
+
+To build:
+```bash
+#path/to/TDAPNRG
+sudo docker build --tag=randology .
+```
+
+To run as a single container, the `run.sh` shell script is provided for convenience. This handles the locations that files need to be mounted.
+```bash
+sudo bash ./run.sh relative/path/to/output_directory relative/path/to/config_file.json
+```
+
+For infomation on writing config files, [see config-syntax.md](config-syntax.md)

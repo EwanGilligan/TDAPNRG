@@ -3,12 +3,19 @@ from scipy import sparse
 from scipy import spatial
 import time
 
-from src.pnrg import RNG
+from randology.pnrg import RNG
 from src.randology import visualise_connected_components_animated
 from .HomologyTest import HomologyTest
+import os
+
+np.set_printoptions(threshold=np.inf)
 
 
 class HypercubeTest(HomologyTest):
+
+    def get_data_file_name(self) -> str:
+        return '{}-{}-{}-{}'.format(self.__class__.__name__, self.dimension, self.number_of_points,
+                                    int(time.time() * 1000))
 
     def generate_reference_distribution(self, reference_rng):
         # generate points at a scale of 1.0
@@ -17,7 +24,8 @@ class HypercubeTest(HomologyTest):
 
     def __init__(self, reference_rng: RNG, number_of_points: int, runs: int = 10, dimension: int = 3,
                  scale: float = 1.0, homology_dimension: int = 0, filtration_size: int = 20,
-                 max_filtration_value: float = None, recalculate_distribution=False, delayed_coordinates=False):
+                 max_filtration_value: float = None, recalculate_distribution=False, delayed_coordinates=False,
+                 store_data=False, gpu=False):
         """
         Initialises a new HypercubeTest object.
 
@@ -35,7 +43,7 @@ class HypercubeTest(HomologyTest):
         # self.filtration_size = len(self.filtration_range)
         self.scale = scale
         super().__init__(reference_rng, runs, number_of_points, homology_dimension, filtration_size,
-                         max_filtration_value, recalculate_distribution)
+                         max_filtration_value, recalculate_distribution, store_data, gpu)
         # Delayed coordinates can only be used for 3D. Working on making it more general.
         assert not delayed_coordinates or (
                 delayed_coordinates and dimension == 3), "Delayed coordinates can only be used for 3D."
@@ -61,12 +69,23 @@ class HypercubeTest(HomologyTest):
         else:
             points = self.generate_points(rng, self.number_of_points, self.dimension, scale)
         # distance_matrix = pairwise_distances(points)
-        sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
+        if self.gpu:
+            # TODO add  in GPU calculation.
+            raise NotImplementedError("GPU calculation of distance matrix not implemented yet.")
+        else:
+            sparse_distance_matrix = self.make_sparse_dm(points, filtration_range[-1])
+        if self.f is not None:
+            output_string = "[Points]\n"
+            output_string += str(points)
+            self.f.write(output_string)
         # An attempt to reduce memory usage, might not work
         del points
         diagrams = self.generate_diagrams(sparse_distance_matrix, threshold=filtration_range[-1])
         homology = self.generate_homology(diagrams, filtration_range)
-        return homology[self.homology_dimension]
+        distribution = homology[self.homology_dimension]
+        if self.f is not None:
+            self.f.write("\n[Distribution]\n" + str(distribution) + "\n")
+        return distribution
 
     def create_filtration_range(self, scale=None, max_filtration_value=None) -> np.array:
         """
@@ -90,6 +109,7 @@ class HypercubeTest(HomologyTest):
             return np.linspace(0, scale * 1 / self.dimension, self.filtration_size)
 
     def visualise_failure(self, rng: RNG, filepath: str):
+        assert self.dimension == 3, "Visualisations can only be created for 3 dimensions."
         point_cloud = self.generate_points(rng, self.number_of_points, self.dimension, self.scale)
         visualise_connected_components_animated(point_cloud, rng.get_name(), filepath, self.filtration_range)
 
@@ -164,7 +184,8 @@ class HypercubeTest(HomologyTest):
             points.append(point)
         return np.array(points)
 
-    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0, verbose=True):
+    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0, verbose=True,
+                                        visualisations: str = None):
         """
         Tests a list of generators, at multiple scales. Generators are removed from the list if the fail the test a specified number of times.
 
@@ -176,7 +197,10 @@ class HypercubeTest(HomologyTest):
         If the generator passes at no scales, then -1 is there.
         """
         # -1 indicates a pass at no scales.
-        results_dict = {rng.get_name(): -1 for rng in generators}
+        results_dict = {rng.get_name(): {
+            'max_scale': -1,
+            'results': []
+        } for rng in generators}
         total_start = time.time()
         original_scale = self.scale
         if scale_list is None:
@@ -195,17 +219,25 @@ class HypercubeTest(HomologyTest):
                 end = time.time()
                 # If the end of file is reached, then set the value to EOF.
                 if passes < 0:
-                    results_dict[rng.get_name()] = 'EOF'
+                    results_dict[rng.get_name()]['max_scale'] = 'EOF'
                 elif verbose:
                     print('{}:{}/{}'.format(rng.get_name(), passes, self.runs))
                     print("Time elapsed:", end - start)
+                # add this result to the output.
+                results_dict[rng.get_name()]['results'].append('{}/{}'.format(passes, self.runs))
+                # produce visualisation if all are wanted.
+                if visualisations == 'all':
+                    self.visualise_failure(rng, os.environ['OUTPUTDIR'])
                 if passes <= failure_threshold:
+                    # produce visualisation if they are created on failure.
+                    if visualisations == 'fail':
+                        self.visualise_failure(rng, os.environ['OUTPUTDIR'])
                     generators.remove(rng)
                     if verbose:
                         print("Generator removed.")
                 else:
                     # record this as the new scale passed at.
-                    results_dict[rng.get_name()] = scale
+                    results_dict[rng.get_name()]['max_scale'] = scale
         total_end = time.time()
         total_time = total_end - total_start
         if verbose:
