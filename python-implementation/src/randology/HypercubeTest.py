@@ -6,6 +6,7 @@ import time
 from randology.pnrg import RNG
 from src.randology import visualise_connected_components_animated
 from .HomologyTest import HomologyTest
+import os
 
 np.set_printoptions(threshold=np.inf)
 
@@ -108,6 +109,7 @@ class HypercubeTest(HomologyTest):
             return np.linspace(0, scale * 1 / self.dimension, self.filtration_size)
 
     def visualise_failure(self, rng: RNG, filepath: str):
+        assert self.dimension == 3, "Visualisations can only be created for 3 dimensions."
         point_cloud = self.generate_points(rng, self.number_of_points, self.dimension, self.scale)
         visualise_connected_components_animated(point_cloud, rng.get_name(), filepath, self.filtration_range)
 
@@ -182,7 +184,8 @@ class HypercubeTest(HomologyTest):
             points.append(point)
         return np.array(points)
 
-    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0, verbose=True):
+    def test_generators_multiple_scales(self, generators, scale_list=None, failure_threshold=0, verbose=True,
+                                        visualisations: str = None):
         """
         Tests a list of generators, at multiple scales. Generators are removed from the list if the fail the test a specified number of times.
 
@@ -222,7 +225,13 @@ class HypercubeTest(HomologyTest):
                     print("Time elapsed:", end - start)
                 # add this result to the output.
                 results_dict[rng.get_name()]['results'].append('{}/{}'.format(passes, self.runs))
+                # produce visualisation if all are wanted.
+                if visualisations == 'all':
+                    self.visualise_failure(rng, os.environ['OUTPUTDIR'])
                 if passes <= failure_threshold:
+                    # produce visualisation if they are created on failure.
+                    if visualisations == 'fail':
+                        self.visualise_failure(rng, os.environ['OUTPUTDIR'])
                     generators.remove(rng)
                     if verbose:
                         print("Generator removed.")
