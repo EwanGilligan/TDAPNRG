@@ -22,5 +22,5 @@ ENV OUTPUTDIR /user/src/randology/output/
 RUN mkdir /user/src/randology/data
 ENV DATADIR /user/src/randology/data/
 RUN touch /user/src/randology/config.json
-RUn touch /user/src/randology/output/test.txt
+# runtime command
 CMD ["python", "run_test.py", "config.json"]
