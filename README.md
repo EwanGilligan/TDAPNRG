@@ -48,3 +48,5 @@ sudo bash ./run.sh relative/path/to/output_directory relative/path/to/config_fil
 For infomation on writing config files, [see config-syntax.md](config-syntax.md)
 
 The output of the program will then be stored in the output directory mounted.
+
+The random sequence files for running can be found [here](https://drive.google.com/drive/folders/16Ilb6xtO4aBl_Hax0SPZG-4XuDef_N1X?usp=sharing).
